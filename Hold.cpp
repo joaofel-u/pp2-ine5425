@@ -18,7 +18,6 @@
 #include "Signal.h"
 
 Hold::Hold(Model* model): ModelComponent(model, Util::TypeOf<Hold>()) {
-   
 } 
 
 Hold::Hold(const Hold& orig) : ModelComponent(orig) {
@@ -32,28 +31,23 @@ std::string Hold::show() {
 	    ", Type=" + std::to_string(static_cast<int> (this->_type)) +
             ", QueueName" + (this->_queue->getName());
     
-    switch (this->_type) {
-        case Type::ScanForCondition:
-            res += ", Condition=" + (this->_condition);
-            break;
+    if (this->_type == Type::ScanForCondition) {
+        res += ", Condition=" + (this->_condition);
             
-        case Type::WaitForSignal:
-            res += ", waitForValue=" + (this->_waitForValue) +
+    } else if (this->_type == Type::WaitForSignal) {
+        res += ", waitForValue=" + (this->_waitForValue) +
                     ", limit=" + (this->_limit);
-            break;
-            
-        case Type::InfiniteHold:
-            break;
-            
-        default:  // UNREACHABLE
-            break;
+    } else {
+        // DO NOTHING
     }
     
     return res;
 }
 
 PluginInformation* Hold::GetPluginInformation() {
-    return new PluginInformation(Util::TypeOf<Hold>(), &Hold::LoadInstance);
+    PluginInformation* info = new PluginInformation(Util::TypeOf<Hold>(), &Hold::LoadInstance);
+    info->insertDynamicLibFileDependence("queue.so");
+    return info;
 }
 
 ModelComponent* Hold::LoadInstance(Model* model, std::map<std::string, std::string>* fields) {
@@ -83,10 +77,7 @@ void Hold::setType(Type _type) {
 }
 
 void Hold::setQueue(Queue* _queue) {
-    if (_queue != nullptr)
-        this->_queue = _queue;
-    else
-        throw std::invalid_argument("Queue does not exist");
+    this->_queue = _queue;
 }
 
 std::string Hold::getWaitForValueExpr() const {
@@ -113,8 +104,9 @@ void Hold::handleSignalReceived(int sigVal, int sigLimit) {
     if (this->_type == Type::WaitForSignal) {
         int expectedSig = _model->parseExpression(_waitForValue);
         int limit = _model->parseExpression(_limit);
+        Waiting* first = _queue->first();
         
-        if (expectedSig == sigVal) {
+        if (first != nullptr && expectedSig == sigVal) {
             int releaseLimit;
             if (sigLimit == 0)
                 releaseLimit = limit;
@@ -128,9 +120,9 @@ void Hold::handleSignalReceived(int sigVal, int sigLimit) {
                 releaseLimit = _queue->size();
                 
             while (releaseLimit > 0) {
-                Waiting* w = _queue->first();
-                this->_queue->removeElement(w);
-                this->releaseEntity(w->getEntity(), w->getTimeStartedWaiting());
+                first = _queue->first();
+                this->_queue->removeElement(first);
+                this->releaseEntity(first->getEntity(), first->getTimeStartedWaiting());
                 releaseLimit--;
             }
         }
@@ -146,20 +138,18 @@ void Hold::releaseEntity(Entity* entity, double startedWaiting) {
 }
 
 void Hold::_execute(Entity* entity) {
-    switch (this->_type) {
-        case Type::ScanForCondition:  // IMPLEMENT CORRECTLY
+    if (this->_type == Type::WaitForSignal || this->_type == Type::InfiniteHold) {
+        Waiting* waiting = new Waiting(entity, this, _model->getSimulation()->getSimulatedTime());
+        this->_queue->insertElement(waiting);
+        _model->getTraceManager()->traceSimulation(Util::TraceLevel::blockInternal, _model->getSimulation()->getSimulatedTime(), entity, this, "Entity starts to wait for signal in queue \"" + _queue->getName());
+    } else {
+        // IMPLEMENT CORRECTLY
 //            Waiting* waiting = new Waiting(entity, this, _model->getSimulation()->getSimulatedTime());
 //            this->_queue->insertElement(waiting);
 //            double condition = _model->parseExpression((_condition));
 //                _model->getTraceManager()->traceSimulation(Util::TraceLevel::blockInternal, _model->getSimulation()->getSimulatedTime(), entity, this, _condition + "the condition evaluated to " + std::to_string(condition));
 //            if (condition)
 //                _model->sendEntityToComponent(entity, this->getNextComponents()->front(), 0.0);
-            return;
-            
-        default:  // WaitForSignal AND InfiniteHold
-            Waiting* waiting = new Waiting(entity, this, _model->getSimulation()->getSimulatedTime());
-            this->_queue->insertElement(waiting);
-            return;
     }
 }
 
@@ -195,21 +185,14 @@ std::map<std::string, std::string>* Hold::_saveInstance() {
 
 bool Hold::_check(std::string* errorMessage) {
     bool resultAll = true;
-    switch (this->_type) {
-        case Type::ScanForCondition:
-            resultAll &= _model->checkExpression(_condition, "Condition", errorMessage);
-            break;
-            
-        case Type::WaitForSignal:
-            resultAll &= _model->checkExpression(_limit, "Limit", errorMessage);
-            resultAll &= _model->checkExpression(_waitForValue, "Wait for Value", errorMessage);
-            break;
-            
-        case Type::InfiniteHold:
-            break;
-            
-        default:  // UNREACHABLE
-            break;
+    
+    if (this->_type == Type::ScanForCondition) {
+        resultAll &= _model->checkExpression(_condition, "Condition", errorMessage);
+    } else if (this->_type == Type::WaitForSignal) {
+        resultAll &= _model->checkExpression(_waitForValue, "Wait for Value", errorMessage);
+        resultAll &= _model->checkExpression(_limit, "Limit", errorMessage);
+    } else {
+        // DO NOTHING
     }
     
     resultAll &= _model->getElementManager()->check(Util::TypeOf<Queue>(), _queue, "Queue", errorMessage);

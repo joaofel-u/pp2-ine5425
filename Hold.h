@@ -50,9 +50,6 @@ public:
     
     void handleSignalReceived(int sigVal, int sigLimit);
 
-private:
-    void releaseEntity(Entity* entity, double startedWaiting);
-
 protected:
     virtual void _execute(Entity* entity);
     virtual bool _loadInstance(std::map<std::string, std::string>* fields);
@@ -60,6 +57,9 @@ protected:
     virtual std::map<std::string, std::string>* _saveInstance();
     virtual bool _check(std::string* errorMessage);
 
+private:
+    void releaseEntity(Entity* entity, double startedWaiting);
+    
 private:
     std::string _waitForValue = "1.0";
     std::string _limit = "0.0";
