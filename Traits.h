@@ -40,6 +40,8 @@
 #include "GenesysConsole.h"
 #include "TestEnterLeaveRoute.h"
 #include "SlidingWindowModel.h"
+#include "TestRemove.h"
+#include "TestSeparate.h"
 
 //  Default implementations
 //statistics
@@ -76,7 +78,10 @@ template <> struct Traits<GenesysApplication_if> {
     //typedef FirstExampleOfSimulation Application;
     //typedef SecondExampleOfSimulation Application;
     //typedef TestEnterLeaveRoute Application;
-    typedef SlidingWindowModel Application;
+    
+    //typedef SlidingWindowModel Application;
+    typedef TestRemove Application;
+    //typedef TestSeparate Application;
 };
 
 
