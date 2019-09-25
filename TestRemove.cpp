@@ -21,6 +21,7 @@
 // Model Components
 #include "Create.h"
 #include "Remove.h"
+#include "Hold.h"
 #include "Dispose.h"
 
 // Model elements
@@ -62,20 +63,49 @@ int TestRemove::main(int argc, char** argv) {
 
     // create a (Source)ModelElement of type EntityType, used by a ModelComponent that follows
     EntityType* carro = new EntityType(elements, "carro");
-    elements->insert(Util::TypeOf<EntityType>(), carro); // insert the element into the model
+    elements->insert(Util::TypeOf<EntityType>(), carro);
     
     EntityType* comprador = new EntityType(elements, "comprador");
     elements->insert(Util::TypeOf<EntityType>(), comprador);
     
-    // create a ModelComponent of type Create, used to insert entities into the model
-    Create* create1 = new Create(model);
-    create1->setEntityType(carro);
-    create1->setTimeBetweenCreationsExpression("1.5"); // create one new entity every 1.5 seconds
-    components->insert(create1); // insert the component into the model
 
-    // create a (Sink)ModelComponent of type Dispose, used to remove entities from the model
-    Dispose* dispose1 = new Dispose(model);  // insert the component into the model
-    components->insert(dispose1);
+    Create* createCarro = new Create(model);
+    createCarro->setEntityType(carro);
+    createCarro->setTimeBetweenCreationsExpression("10");
+    createCarro->setTimeUnit(Util::TimeUnit::minute);
+    components->insert(createCarro);
+
+    Queue* queueHold = new Queue(elements, "queue1");
+    queueHold->setOrderRule(Queue::OrderRule::FIFO);
+    elements->insert(Util::TypeOf<Queue>(), queueHold);
+    
+    Hold* hold1 = new Hold(model);
+    
+    
+    Create* createComprador = new Create(model);
+    createComprador->setEntityType(comprador);
+    createComprador->setTimeBetweenCreationsExpression("20");
+    createComprador->setTimeUnit(Util::TimeUnit::minute);
+    components->insert(createComprador);
+    
+    Dispose* disposeComprador = new Dispose(model);
+    components->insert(disposeComprador);
+    
+    Dispose* disposeCarro = new Dispose(model);
+    components->insert(disposeCarro);
+    
+    Remove* remove1 = new Remove(model);
+    components->insert(remove1);
+    
+    
+    /* Connection 1. */
+    createCarro->getNextComponents()->insert(hold1);
+    
+    /* Connection 2. */
+    createComprador->getNextComponents()->insert(remove1);
+    remove1->getNextComponents()->insert(disposeComprador);
+    /*insert remove entity destiny*/
+    
     
     
     // insert the model into the simulator 
