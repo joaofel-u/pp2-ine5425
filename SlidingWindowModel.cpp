@@ -39,6 +39,7 @@
 #include "EntityType.h"
 #include "Queue.h"
 #include "Resource.h"
+#include "Release.h"
 
 
 SlidingWindowModel::SlidingWindowModel() {
@@ -181,23 +182,65 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /*
-     * Secao Cria N pacotes.
+     * @brief Defines the replication params.
+     * 
+     * @todo Define variables: 
+     *                          JanelaDeslizante
+     *                          TamanhoPacote
+     *                          TaxaDeTransmissao
+     *                          TempoMaximoAck
+     *                          TaxaErro
+     * 
+     * @todo Define counter for:
+     *                          Pacotes Reenviados
      *
-     * @todo TODO: Define correct parameters for components.
+     */
+    
+    
+    /*
+     * @brief Instantiates all attributes and variables that will be used on the model.
+     * 
+     * @todo Finish this.
+     * @todo Set initial values if it's necessary.
+     */
+    Attribute* attribute_numeroPacote = new Attribute("NumeroPacote");
+    elements->insert(Util::TypeOf<Attribute>(), attribute_numeroPacote);
+    
+    Attribute* attribute_tamanhoPacote = new Attribute("TamanhoPacote");
+    elements->insert(Util::TypeOf<Attribute>(), attribute_tamanhoPacote);
+    
+    Attribute* attribute_delayCanal = new Attribute("DelayCanal");
+    elements->insert(Util::TypeOf<Attribute>(), attribute_delayCanal);
+    
+    Attribute* attribute_delayTransmissao = new Attribute("DelayTransmissao");
+    elements->insert(Util::TypeOf<Attribute>(), attribute_delayTransmissao);
+    
+    Variable* variable_pacotesEnviados = new Variable("PacotesEnviados");
+    elements->insert(Util::TypeOf<Variable>(), variable_pacotesEnviados);
+    
+    
+    /*
+     * Secao Cria N pacotes.
      */
     /* Create 'Pacotes'. */
     create_pacotes = new Create(model);
     create_pacotes->setName("Pacotes");
     create_pacotes->setEntityType(pacote);
     create_pacotes->setTimeBetweenCreationsExpression("1");
+    create_pacotes->setTimeUnit(Util::TimeUnit::second);
+    create_pacotes->setEntitiesCreated(1);
+    create_pacotes->setMaxCreations("MR(JanelaDeslizante)");
+    create_pacotes->setFirstCreation(0.0);
     components->insert(create_pacotes);
     
     
     /* Route 'GoToNovoPacote'. */
     route_goToNovoPacote = new Route(model);
     route_goToNovoPacote->setName("GoToNovoPacote");
+    route_goToNovoPacote->setRouteTimeExpression("0");
+    route_goToNovoPacote->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_goToNovoPacote->setRouteDestinationType(Route::DestinationType::Station);
     route_goToNovoPacote->setStation(station_novoPacote);
-    route_goToNovoPacote->setRouteTimeExpression("1");
     components->insert(route_goToNovoPacote);
     
     
@@ -207,8 +250,6 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     /*
      * Secao Transmissor.
-     *
-     * @todo TODO: Define correct parameters for components.
      */
     /* Station 'NovoPacote'. */
     station_novoPacote = new Station(elements, "NovoPacote");
@@ -228,24 +269,29 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Assign 'AtribuiNumero'. */
     assign_atribuiNumero = new Assign(model);
     assign_atribuiNumero->setName("AtribuiNumero");
+    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "NumeroPacote", "PacotesEnviados + 1"));
+    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Variable, "PacotesEnviados", "PacotesEnviados + 1"));
     components->insert(assign_atribuiNumero);
     
     
     /* Assign 'AtribuiTamanho'. */
     assign_atribuiTamanho = new Assign(model);
     assign_atribuiTamanho->setName("AtribuiTamanho");
+    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "TamanhoPacote", "1.16e+003 + 339 * BETA(5.8,1.53)"));
     components->insert(assign_atribuiTamanho);
     
     
     /* Assign 'AtribuiDelays'. */
     assign_atribuiDelays = new Assign(model);
     assign_atribuiDelays->setName("AtribuiDelays");
+    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "DelayCanal", "UNIF(1,50)"));
+    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "DelayTransmissao", "TamanhoPacote * 8 / TaxaDeTransmissao"));
     components->insert(assign_atribuiDelays);
     
     
     /* Seize 'EntraNaJanela'. */
     Resource* resource_janelaDeslizante = new Resource(elements, "JanelaDeslizante");
-    resource_janelaDeslizante->setCapacity("1");
+    resource_janelaDeslizante->setCapacity("5");
     elements->insert(Util::TypeOf<Resource>(), resource_janelaDeslizante);
     
     Queue* queue_filaJanela = new Queue(elements, "FilaJanela");
@@ -254,16 +300,22 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     seize_entraNaJanela = new Seize(model);
     seize_entraNaJanela->setName("EntraNaJanela");
+    seize_entraNaJanela->setResourceType(Resource::ResourceType::RESOURCE);
     seize_entraNaJanela->setResource(resource_janelaDeslizante);
+    /* @todo See if it's necessary to define allocationType (where the stat is saved). */
+    seize_entraNaJanela->setPriority(2);
     seize_entraNaJanela->setQueue(queue_filaJanela);
+    seize_entraNaJanela->setQuantity("1.0");
     components->insert(seize_entraNaJanela);
     
     
     /* Route 'GoToEnvioTransmissor'. */
     route_goToEnvioTransmissor = new Route(model);
     route_goToEnvioTransmissor->setName("GoToEnvioTransmissor");
+    route_goToEnvioTransmissor->setRouteTimeExpression("0");
+    route_goToEnvioTransmissor->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_goToEnvioTransmissor->setRouteDestinationType(Route::DestinationType::Station);
     route_goToEnvioTransmissor->setStation(station_envioTransmissor);
-    route_goToEnvioTransmissor->setRouteTimeExpression("1");
     components->insert(route_goToEnvioTransmissor);
     
     
@@ -296,7 +348,8 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /*
      *  Separate 'CriaEsperaAck'.
      * 
-     * @todo TODO: See 'Separate' implementation. 
+     * @todo See 'Separate' implementation. 
+     * @todo Define correct parameters.
      */
     separate_criaEsperaAck = new Separate(model);
     separate_criaEsperaAck->setName("CriaEsperaAck");
@@ -323,21 +376,26 @@ int SlidingWindowModel::main(int argc, char** argv) {
     resource_canalDeTransmissaoPacote->setCapacity("1");
     elements->insert(Util::TypeOf<Resource>(), resource_canalDeTransmissaoPacote);
     
-    Queue* queue_filaCanal = new Queue(elements, "FilaCanal");
-    queue_filaCanal->setOrderRule(Queue::OrderRule::FIFO);
-    elements->insert(Util::TypeOf<Queue>(), queue_filaCanal);
+    Queue* queue_filaTransmissaoPacote = new Queue(elements, "FilaTransmissaoPacote");
+    queue_filaTransmissaoPacote->setOrderRule(Queue::OrderRule::FIFO);
+    elements->insert(Util::TypeOf<Queue>(), queue_filaTransmissaoPacote);
     
     seize_alocaCanal = new Seize(model);
     seize_alocaCanal->setName("AlocaCanal");
+    seize_alocaCanal->setResourceType(Resource::ResourceType::RESOURCE);
     seize_alocaCanal->setResource(resource_canalDeTransmissaoPacote);
-    seize_alocaCanal->setQueue(queue_filaCanal);
+    /* @todo See if it's necessary to define allocationType (where the stat is saved). */
+    seize_alocaCanal->setPriority(2);
+    seize_alocaCanal->setQueue(queue_filaTransmissaoPacote);
+    seize_alocaCanal->setQuantity("1.0");
     components->insert(seize_alocaCanal);
     
     
     /* Delay 'AtrasoDeTransmissao'. */
     delay_atrasoDeTransmissao = new Delay(model);
     delay_atrasoDeTransmissao->setName("AtrasoDeTransmissao");
-    delay_atrasoDeTransmissao->setDelayExpression("2");
+    /* @todo Ver necessidade de especificar allocation. */
+    delay_atrasoDeTransmissao->setDelayExpression("DelayTransmissao"); /* See if it's correct. */
     delay_atrasoDeTransmissao->setDelayTimeUnit(Util::TimeUnit::second);
     components->insert(delay_atrasoDeTransmissao);
     
@@ -345,7 +403,9 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Release 'LivraCanal'. */
     release_livraCanal = new Release(model);
     release_livraCanal->setName("LivraCanal");
+    release_livraCanal->setResourceType(Resource::ResourceType::RESOURCE);
     release_livraCanal->setResource(resource_canalDeTransmissaoPacote);
+    release_livraCanal->setQuantity("1");
     components->insert(release_livraCanal);
     
     
@@ -353,6 +413,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
      * Separate 'CriaTimeout'.
      * 
      * @todo TODO: See 'Separate' implementation. 
+     * @todo Define correct parameters.
      */ 
     separate_criaTimeout = new Separate(model);
     separate_criaTimeout->setName("CriaTimeout");
@@ -362,28 +423,32 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Route 'GoToCountTimeout'. */
     route_goToCountTimeout = new Route(model);
     route_goToCountTimeout->setName("GoToCountTimeout");
+    route_goToCountTimeout->setRouteTimeExpression("0");
+    route_goToCountTimeout->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_goToCountTimeout->setRouteDestinationType(Route::DestinationType::Station);
     route_goToCountTimeout->setStation(station_countTimeout);
-    route_goToCountTimeout->setRouteTimeExpression("1");
     components->insert(route_goToCountTimeout);
     
     
     /* Route 'GoToOutTransmissor'. */
     route_goToOutTransmissor = new Route(model);
     route_goToOutTransmissor->setName("GoToOutTransmissor");
-    route_goToOutTransmissor->setStation(station_countTimeout);
-    route_goToOutTransmissor->setRouteTimeExpression("1");
+    route_goToOutTransmissor->setRouteTimeExpression("0");
+    route_goToOutTransmissor->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_goToOutTransmissor->setRouteDestinationType(Route::DestinationType::Station);
+    route_goToOutTransmissor->setStation(station_outTransmissor);
     components->insert(route_goToOutTransmissor);
     
     
     /* Connect the components from 'Envio transmissor'. */
     leave_envioTransmissor->getNextComponents()->insert(separate_criaEsperaAck);
     separate_criaEsperaAck->getNextComponents()->insert(seize_alocaCanal);
-    /* @todo TODO: Insert second out from separate_criaEsperaAck. */
+    /* @todo Insert second out from separate_criaEsperaAck. */
     seize_alocaCanal->getNextComponents()->insert(delay_atrasoDeTransmissao);
     delay_atrasoDeTransmissao->getNextComponents()->insert(release_livraCanal);
     release_livraCanal->getNextComponents()->insert(separate_criaTimeout);
     separate_criaTimeout->getNextComponents()->insert(route_goToOutTransmissor);
-    /* @todo TODO: Insert second out from separate_criaTimeout. */
+    /* @todo Insert second out from separate_criaTimeout. */
     
     
     /*
@@ -407,6 +472,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Hold 'HoldAck'. 
      *
      * @todo TODO: See Hold implementation
+     * @todo Define correct parameters.
      */
     Queue* queue_filaAck = new Queue(elements, "FilaAck");
     queue_filaAck->setOrderRule(Queue::OrderRule::FIFO);
@@ -420,11 +486,17 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Release 'LivraJanela'. */
     release_livraJanela = new Release(model);
     release_livraJanela->setName("LivraJanela");
+    release_livraJanela->setResourceType(Resource::ResourceType::RESOURCE);
     release_livraJanela->setResource(resource_janelaDeslizante);
+    release_livraJanela->setQuantity("1");
     components->insert(release_livraJanela);
     
     
-    /* Record 'ContaEnviadosComSucesso'. */
+    /* 
+     * Record 'ContaEnviadosComSucesso'. 
+     * 
+     * @todo Define correct parameters.
+     */
     record_contaEnviadosComSucesso = new Record(model);
     record_contaEnviadosComSucesso->setName("ContaEnviadosComSucesso");
     components->insert(record_contaEnviadosComSucesso);
@@ -433,8 +505,10 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Route 'ReciclaPacotes'. */
     route_reciclaPacotes = new Route(model);
     route_reciclaPacotes->setName("ReciclaPacotes");
+    route_reciclaPacotes->setRouteTimeExpression("0");
+    route_reciclaPacotes->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_reciclaPacotes->setRouteDestinationType(Route::DestinationType::Station);
     route_reciclaPacotes->setStation(station_novoPacote);
-    route_reciclaPacotes->setRouteTimeExpression("1");
     components->insert(route_reciclaPacotes);
     
     /* Connect the components that control the ACK waiting. */
@@ -462,7 +536,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Decide 'VerificaFilaAck'. */
     decide_verificaFilaAck = new Decide(model);
     decide_verificaFilaAck->setName("VerificaFilaAck");
-    decide_verificaFilaAck->getConditions()->insert("NQ(Queue_Machine_1) <= 2*NQ(Queue_Machine_2)");
+    decide_verificaFilaAck->getConditions()->insert("NQ(FilaAck) > 0");
     components->insert(decide_verificaFilaAck);
     
     
@@ -472,14 +546,23 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(dispose_ignoraAck);
     
     
-    /* Decide 'VerificaAck'. */
+    /* 
+     * Decide 'VerificaAck'. 
+     * 
+     * @todo Define correct expression.
+     */
     decide_verificaAck = new Decide(model);
     decide_verificaAck->setName("VerificaAck");
-    decide_verificaAck->getConditions()->insert("NQ(Queue_Machine_1) <= 2*NQ(Queue_Machine_2)");
+    decide_verificaAck->getConditions()->insert("NumeroPacote == AQUE(FilaAck,1,NSYM(NumeroPacote))");
     components->insert(decide_verificaAck);
     
     
-    /* Signal 'RetiraDaFilaAck'. */
+    /* 
+     * Signal 'RetiraDaFilaAck'. 
+     * 
+     * @todo See Signal implementation.
+     * @todo Define correct parameters.
+     */
     signal_retiraDaFilaAck = new Signal(model);
     signal_retiraDaFilaAck->setName("RetiraDaFilaAck");
     components->insert(signal_retiraDaFilaAck);
@@ -518,7 +601,8 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Delay 'TimeoutAck'. */
     delay_timeoutAck = new Delay(model);
     delay_timeoutAck->setName("TimeoutAck");
-    delay_timeoutAck->setDelayExpression("2");
+    /* @todo Ver necessidade de especificar allocation. */
+    delay_timeoutAck->setDelayExpression("TempoMaximoAck"); // @todo See if it's correct
     delay_timeoutAck->setDelayTimeUnit(Util::TimeUnit::second);
     components->insert(delay_timeoutAck);
     
@@ -526,7 +610,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Decide 'VerificaFilaAckTimeout'. */
     decide_verificaFilaAckTimeout = new Decide(model);
     decide_verificaFilaAckTimeout->setName("VerificaFilaAckTimeout");
-    decide_verificaFilaAckTimeout->getConditions()->insert("NQ(Queue_Machine_1) <= 2*NQ(Queue_Machine_2)");
+    decide_verificaFilaAckTimeout->getConditions()->insert("NQ(FilaAck) > 0");
     components->insert(decide_verificaFilaAckTimeout);
     
     
@@ -536,40 +620,55 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(dispose_descartaTimeout);
     
     
-    /* Decide 'VerificaTimeout'. */
+    /* 
+     * Decide 'VerificaTimeout'. 
+     * 
+     * @todo Define correct expression.
+     */
     decide_verificaTimeout = new Decide(model);
     decide_verificaTimeout->setName("VerificaTimeout");
-    decide_verificaTimeout->getConditions()->insert("NQ(Queue_Machine_1) <= 2*NQ(Queue_Machine_2)");
+    decide_verificaTimeout->getConditions()->insert("NumeroPacote == AQUE(FilaAck,1,NSYM(NumeroPacote))");
     components->insert(decide_verificaTimeout);
     
     
     /* Decide 'RemoveFilaInteira'. */
     decide_removeFilaInteira = new Decide(model);
     decide_removeFilaInteira->setName("RemoveFilaInteira");
-    decide_removeFilaInteira->getConditions()->insert("NQ(Queue_Machine_1) <= 2*NQ(Queue_Machine_2)");
+    decide_removeFilaInteira->getConditions()->insert("NQ(FilaAck) > 0");
     components->insert(decide_removeFilaInteira);
     
     
     /* Remove 'RemoveDaFila'.
      * 
      * @todo TODO: See 'Remove' implementation.
+     * @todo Define correct parameters.
      */
     remove_removeDaFila = new Remove(model);
     remove_removeDaFila->setName("RemoveDaFila");
     components->insert(remove_removeDaFila);
     
     
-    /* Record 'ContaReenviados'. */
+    /* 
+     * Record 'ContaReenviados'. 
+     * 
+     * @todo Define correct parameters.
+     * @todo Define as a counter.
+     */
     record_contaReenviados = new Record(model);
     record_contaReenviados->setName("ContaReenviados");
+    record_contaReenviados->setExpressionName("Pacotes Reenviados");
+    record_contaReenviados->setExpression("PacotesReenviados + 1");
+    record_contaReenviados->setFilename("./temp/PacotesReenviados.txt");
     components->insert(record_contaReenviados);
     
     
     /* Route 'ReenviaPacote'. */
     route_reenviaPacote = new Route(model);
     route_reenviaPacote->setName("ReenviaPacote");
+    route_reenviaPacote->setRouteTimeExpression("0");
+    route_reenviaPacote->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_reenviaPacote->setRouteDestinationType(Route::DestinationType::Station);
     route_reenviaPacote->setStation(station_envioTransmissor);
-    route_reenviaPacote->setRouteTimeExpression("1");
     components->insert(route_reenviaPacote);
     
     
@@ -618,15 +717,20 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     seize_alocaRotaPacote = new Seize(model);
     seize_alocaRotaPacote->setName("AlocaRotaPacote");
+    seize_alocaRotaPacote->setResourceType(Resource::ResourceType::RESOURCE);
     seize_alocaRotaPacote->setResource(resource_rotaPacote);
+    /* @todo See if it's necessary to define allocationType (where the stat is saved). */
+    seize_alocaRotaPacote->setPriority(2);
     seize_alocaRotaPacote->setQueue(queue_filaAlocaRotaPacote);
+    seize_alocaRotaPacote->setQuantity("1.0");
     components->insert(seize_alocaRotaPacote);
     
     
     /* Delay 'LatenciaCanal'. */
     delay_latenciaCanal = new Delay(model);
     delay_latenciaCanal->setName("LatenciaCanal");
-    delay_latenciaCanal->setDelayExpression("2");
+    /* @todo Ver necessidade de especificar allocation. */
+    delay_latenciaCanal->setDelayExpression("DelayCanal");
     delay_latenciaCanal->setDelayTimeUnit(Util::TimeUnit::second);
     components->insert(delay_latenciaCanal);
     
@@ -634,22 +738,30 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Release 'LivraRotaPacote'. */
     release_livraRotaPacote = new Release(model);
     release_livraRotaPacote->setName("LivraRotaPacote");
+    release_livraRotaPacote->setResourceType(Resource::ResourceType::RESOURCE);
     release_livraRotaPacote->setResource(resource_rotaPacote);
+    release_livraRotaPacote->setQuantity("1");
     components->insert(release_livraRotaPacote);
     
     
-    /* Decide 'DecideErroPacote'. */
+    /* 
+     * Decide 'DecideErroPacote'. 
+     * 
+     * @todo Check condition with chance corretude.
+     */
     decide_decideErroPacote = new Decide(model);
     decide_decideErroPacote->setName("DecideErroPacote");
-    decide_decideErroPacote->getConditions()->insert("NQ(Queue_Machine_1) <= 2*NQ(Queue_Machine_2)");
+    decide_decideErroPacote->getConditions()->insert("");
     components->insert(decide_decideErroPacote);
     
     
     /* Route 'GoToInReceptor'. */
     route_goToInReceptor = new Route(model);
     route_goToInReceptor->setName("GoToInReceptor");
+    route_goToInReceptor->setRouteTimeExpression("0");
+    route_goToInReceptor->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_goToInReceptor->setRouteDestinationType(Route::DestinationType::Station);
     route_goToInReceptor->setStation(station_inReceptor);
-    route_goToInReceptor->setRouteTimeExpression("1");
     components->insert(route_goToInReceptor);
     
     
@@ -660,7 +772,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /* Connect the components of 'Canal de Transmissao - Transmissor > Receptor'*/
-    leave_OutTransmissor->getNextComponents()->insert(seize_alocaRotaPacote);
+    leave_outTransmissor->getNextComponents()->insert(seize_alocaRotaPacote);
     seize_alocaRotaPacote->getNextComponents()->insert(delay_latenciaCanal);
     delay_latenciaCanal->getNextComponents()->insert(release_livraRotaPacote);
     release_livraRotaPacote->getNextComponents()->insert(decide_decideErroPacote);
@@ -699,15 +811,20 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     seize_alocaRotaAck = new Seize(model);
     seize_alocaRotaAck->setName("AlocaRotaAck");
+    seize_alocaRotaAck->setResourceType(Resource::ResourceType::RESOURCE);
     seize_alocaRotaAck->setResource(resource_rotaAck);
+    /* @todo See if it's necessary to define allocationType (where the stat is saved). */
+    seize_alocaRotaAck->setPriority(2);
     seize_alocaRotaAck->setQueue(queue_filaAlocaRotaAck);
+    seize_alocaRotaAck->setQuantity("1.0");
     components->insert(seize_alocaRotaAck);
     
     
     /* Delay 'LatenciaCanalAck'. */
     delay_latenciaCanalAck = new Delay(model);
     delay_latenciaCanalAck->setName("LatenciaCanalAck");
-    delay_latenciaCanalAck->setDelayExpression("2");
+    /* @todo Ver necessidade de especificar allocation. */
+    delay_latenciaCanalAck->setDelayExpression("DelayCanal");
     delay_latenciaCanalAck->setDelayTimeUnit(Util::TimeUnit::second);
     components->insert(delay_latenciaCanalAck);
     
@@ -715,22 +832,30 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Release 'LivraRotaAck'. */
     release_livraRotaAck = new Release(model);
     release_livraRotaAck->setName("LivraRotaAck");
+    release_livraRotaAck->setResourceType(Resource::ResourceType::RESOURCE);
     release_livraRotaAck->setResource(resource_rotaAck);
+    release_livraRotaAck->setQuantity("1");
     components->insert(release_livraRotaAck);
     
     
-    /* Decide 'DecideErroAck'. */
+    /* 
+     * Decide 'DecideErroAck'. 
+     * 
+     * @todo Check condition with chance corretude.
+     */
     decide_decideErroAck = new Decide(model);
     decide_decideErroAck->setName("DecideErroAck");
-    decide_decideErroAck->getConditions()->insert("NQ(Queue_Machine_1) <= 2*NQ(Queue_Machine_2)");
+    decide_decideErroAck->getConditions()->insert("");
     components->insert(decide_decideErroAck);
     
     
     /* Route 'GoToInTransmissor'. */
     route_goToInTransmissor = new Route(model);
     route_goToInTransmissor->setName("GoToInTransmissor");
+    route_goToInTransmissor->setRouteTimeExpression("0");
+    route_goToInTransmissor->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_goToInTransmissor->setRouteDestinationType(Route::DestinationType::Station);
     route_goToInTransmissor->setStation(station_inTransmissor);
-    route_goToInTransmissor->setRouteTimeExpression("1");
     components->insert(route_goToInTransmissor);
     
     
@@ -741,7 +866,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /* Connect the components of 'Canal de Transmissao - Receptor > Transmissor'*/
-    leave_OutReceptor->getNextComponents()->insert(seize_alocaRotaAck);
+    leave_outReceptor->getNextComponents()->insert(seize_alocaRotaAck);
     seize_alocaRotaAck->getNextComponents()->insert(delay_latenciaCanalAck);
     delay_latenciaCanalAck->getNextComponents()->insert(release_livraRotaAck);
     release_livraRotaAck->getNextComponents()->insert(decide_decideErroAck);
@@ -751,6 +876,8 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     /*
      * Secao Receptor.
+     * 
+     * @todo Define correct parameters.
      */
     /* Station 'InReceptor'. */
     station_inReceptor = new Station(elements, "InReceptor");
@@ -795,6 +922,8 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     /*
      * Secao Envio receptor.
+     * 
+     * @todo Define correct parameters.
      */
     /* Station 'EnvioReceptor'. */
     station_envioReceptor = new Station(elements, "EnvioReceptor");
@@ -831,7 +960,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     delay_atrasoDeTransmissaoAck = new Delay(model);
     delay_atrasoDeTransmissaoAck->setName("AtrasoDeTransmissaoAck");
     delay_atrasoDeTransmissaoAck->setDelayExpression("2");
-    delay_atrasoDeTransmissaoAck->setDelayUnit(Util::TimeUnit::second);
+    delay_atrasoDeTransmissaoAck->setDelayTimeUnit(Util::TimeUnit::second);
     components->insert(delay_atrasoDeTransmissaoAck);
     
     
