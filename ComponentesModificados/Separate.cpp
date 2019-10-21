@@ -1,35 +1,45 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/* 
+ * File:   Separate.cpp
+ * Author: rlcancian
+ * 
+ * Created on 03 de Junho de 2019, 15:14
+ */
+
 #include "Separate.h"
 
-/*!
- * Constructor
- *
- * @param model is the object of the model executing.
- */
+#include "Model.h"
+#include "EntityGroup.h"
+
+#include <string>
+#include <list>
+#include <assert.h>
+
 Separate::Separate(Model* model) : ModelComponent(model, Util::TypeOf<Separate>()) {
-    this->_splitBatch = true;
-    this->_amountToDup = 1;
-    this->_takeAllRepresentativeValues = false;
 }
 
-Separate::Separate(const Separate& orig) : ModelComponent(orig) {}
+Separate::Separate(const Separate& orig) : ModelComponent(orig) {
+}
 
-Separate::~Separate() {}
+Separate::~Separate() {
+}
 
-/*!
- * Display information about the Separate component
- */
 std::string Separate::show() {
-    return ModelComponent::show() + ",separateName=\"" + this->_separateName + "\"";
+    return ModelComponent::show() + "";
 }
 
 ModelComponent* Separate::LoadInstance(Model* model, std::map<std::string, std::string>* fields) {
     Separate* newComponent = new Separate(model);
-
     try {
-        newComponent->_loadInstance(fields);
+	newComponent->_loadInstance(fields);
     } catch (const std::exception& e) {
-    }
 
+    }
     return newComponent;
 }
 
@@ -52,7 +62,7 @@ void Separate::setSplitBatch(bool value) {
  *  Set the number of duplicates to an entity to be generated, when using
  * duplication
  */
-void Separate::setAmountToDuplicate(unsigned int value) {
+void Separate::setAmountToDuplicate(std::string value) {
     this->_amountToDup = value;
 }
 
@@ -61,7 +71,7 @@ void Separate::setAmountToDuplicate(unsigned int value) {
  *  original entities
  */
 void Separate::setTakeAllRepresentativeValues(bool value) {
-    this->_takeAllRepresentativeValues = value;
+	this->_takeAllRepresentativeValues = value;
 }
 
 /*!
@@ -77,6 +87,7 @@ void Separate::_execute(Entity* entity) {
     std::string batchEntityName = entity->getEntityTypeName();
     std::string batchesCountStr = std::to_string(batchesCount);
     std::string attributeValue = std::to_string(entity->getAttributeValue("Entity.AttributeValue"));
+
     std::string batchEntityID = batchEntityName + batchesCountStr + attributeValue + std::to_string(copyId);
 
     ElementManager* elementManager = this->_model->getElementManager();
@@ -85,109 +96,122 @@ void Separate::_execute(Entity* entity) {
     traceManager->trace(Util::TraceLevel::blockInternal, "Arrival of entity " + std::to_string(entity->getId()) +
                                                          " at time " + std::to_string(currentTime));
 
-    Group* group = (Group*) elementManager->getElement(Util::TypeOf<Group>(), batchEntityID);
-
+    EntityGroup* group = (EntityGroup*) elementManager->getElement(Util::TypeOf<EntityGroup>(), batchEntityID);
+    
+    double replicationsNumber = 0;
+    if(this->_attributeType){
+        replicationsNumber = entity->getAttributeValue(this->_amountToDup);
+    }else{
+        replicationsNumber = _model->parseExpression(this->_amountToDup);
+    }
+    _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, this->_amountToDup);
+    _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, std::to_string(replicationsNumber));
     if (this->_splitBatch) {
-        /* Split the existing Batch entity */
-        Entity* batchEntity;
-        if ((bool)entity->getAttributeValue("Entity.Permanent")) {
-            this->_model->sendEntityToComponent(entity, this->getNextComponents()->front(), 0.0);
-            return;
-        }
-        assert(group != nullptr);
+      /* Split the existing Batch entity */
+      traceManager->trace(Util::TraceLevel::blockInternal, "Split the existing Batch entity");
+      Entity* batchEntity;
 
-        for (auto i = 0u; i < group->size(); i++) {
-            batchEntity = group->first();
-            group->removeElement(batchEntity);
-            this->_model->sendEntityToComponent(batchEntity, this->getNextComponents()->front(), 0.0);
-        }
+      if ((bool)entity->getAttributeValue("Entity.Permanent")) {
+          this->_model->sendEntityToComponent(entity, this->getNextComponents()->front(), 0.0);
+          return;
+      }
+
+      assert(group != nullptr);
+
+      for (auto i = 0u; i < group->size(); i++) {
+          batchEntity = group->first();
+
+          group->removeElement(batchEntity);
+
+          this->_model->sendEntityToComponent(entity, this->getNextComponents()->frontConnection(), 0.0);
+      }
     } else {
-        /* Duplicate the existing entity */
-        ModelComponent* originalComponent = this->getNextComponents()->front();
-        ModelComponent* duplicateComponent = originalComponent->getNextComponents()->front();
-        Entity* duplicateEntity;
-        this->_model->sendEntityToComponent(entity, originalComponent, 0.0);
+      /* Duplicate the existing entity */
+        traceManager->trace(Util::TraceLevel::blockInternal, "Duplicate the existing entity");
 
-        for (auto k = 0u; k < this->_amountToDup; k++) {
+
+        Entity* duplicateEntity;
+
+        _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending the original entity forward to the first connection");
+        this->_model->sendEntityToComponent(entity, this->getNextComponents()->frontConnection(), 0.0);
+
+        for (int k = 0; k < replicationsNumber; k++) {
             /* Duplicate input entity in N entities*/
+
             if (entity->getEntityTypeName().find("_Batch") != std::string::npos) {
                 assert(group != nullptr);
+                _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Batch");
                 duplicateEntity = new Entity(elementManager);
                 duplicateEntity->setEntityType(entity->getEntityType());
 
                 Entity* newEntity;
+
                 std::string dupBatchEntityID = batchEntityName + batchesCountStr + attributeValue + std::to_string(copyId + 1);
 
-                Group* duplicateGroup = new Group(elementManager, dupBatchEntityID);
-                elementManager->insert(Util::TypeOf<Group>(), duplicateGroup);
-                
-                // VER
-                //std::list<Entity*>* entitiesToDup = group->getList();
-                std::list<Entity*>* entitiesToDup;
-                std::list<Entity*>::iterator it = entitiesToDup->begin();
+                EntityGroup* duplicateGroup = new EntityGroup(elementManager, dupBatchEntityID);
+                elementManager->insert(Util::TypeOf<EntityGroup>(), duplicateGroup);
 
-                for (auto i = 0u; i < entitiesToDup->size(); i++) {
-                    auto original = std::next(it, 1);
+                List<Entity*>* entitiesToDup = group->getList();
+
+                for (int i = 0; i < entitiesToDup->size(); i++) {
+                    Entity* original = entitiesToDup->getAtRank(i);
+
                     newEntity = new Entity(elementManager);
-                    newEntity->setEntityType((*original)->getEntityType());
+                    newEntity->setEntityType(original->getEntityType());
+
                     duplicateGroup->insertElement(newEntity);
                 }
+
                 copyId++;
 
-                duplicateEntity->setAttributeValue("Entity.GroupRankID", (double)elementManager->getRankOf(Util::TypeOf<Group>(), dupBatchEntityID));
+                duplicateEntity->setAttributeValue("Entity.GroupRankID", (double) elementManager->getRankOf(Util::TypeOf<EntityGroup>(), dupBatchEntityID));
                 duplicateEntity->setAttributeValue("Entity.Permanent", (bool)entity->getAttributeValue("Entity.Permanent"));
                 duplicateEntity->setAttributeValue("Entity.CopyNumber", copyId);
                 duplicateEntity->setAttributeValue("Entity.AttributeValue", entity->getAttributeValue("Entity.AttributeValue"));
 
                 elementManager->insert(Util::TypeOf<Entity>(), duplicateEntity);
-
-                this->_model->sendEntityToComponent(duplicateEntity, duplicateComponent, 0.0);
+                _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending a copied entity forward to the second connection");
+                _model->sendEntityToComponent(duplicateEntity, this->getNextComponents()->getConnectionAtRank(1), 0.0);
             } else {
+                _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Not a batch");
                 duplicateEntity = new Entity(elementManager);
                 duplicateEntity->setEntityType(entity->getEntityType());
-                this->_model->sendEntityToComponent(duplicateEntity, duplicateComponent, 0.0);
+                _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending a copied entity forward to the second connection");
+                _model->sendEntityToComponent(duplicateEntity, this->getNextComponents()->getConnectionAtRank(1), 0.0);
             }
         }
     }
 }
 
-
-/*!
- *  Load a previous instance of the Separate class stored.
- */
 bool Separate::_loadInstance(std::map<std::string, std::string>* fields) {
     bool res = ModelComponent::_loadInstance(fields);
-
     if (res) {
-        this->_separateName = (*(fields->find("separateName"))).second;
-        this->_splitBatch = (*(fields->find("splitBatch"))).second == "true";
+        //...
     }
-
     return res;
 }
 
-/*!
- *  Store current instance of Separate in a std::map, to be used as settings
- *  backup
- */
+void Separate::_initBetweenReplications() {
+}
+
 std::map<std::string, std::string>* Separate::_saveInstance() {
     std::map<std::string, std::string>* fields = ModelComponent::_saveInstance();
-
-    fields->emplace("separateName", this->_separateName);
-    fields->emplace("splitBatch", std::to_string(this->_splitBatch));
-
+    //...
     return fields;
 }
 
-/*!
- *  Execute the clean up before each new replication.
- */
-void Separate::_initBetweenReplications() {}
-
 bool Separate::_check(std::string* errorMessage) {
-    return ModelComponent::_check(errorMessage);
+    bool resultAll = true;
+    //...
+    return resultAll;
 }
 
 PluginInformation* Separate::GetPluginInformation(){
-    return new PluginInformation(Util::TypeOf<Separate>(), &Separate::LoadInstance);
+    PluginInformation* info = new PluginInformation(Util::TypeOf<Separate>(), &Separate::LoadInstance);
+    // ...
+    return info;
+}
+
+void Separate::setAttributeType(bool value){
+    this->_attributeType = value;
 }

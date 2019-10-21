@@ -42,7 +42,7 @@ private:
     std::string _queueName = "Queue";
 
     /* Rank of Entity: Rank of the entity to remove from within the queue. */
-    std::string _rank = "1";
+    std::string _rank = "0";
 };
 
 #endif /* REMOVE_H */

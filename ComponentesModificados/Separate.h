@@ -1,41 +1,56 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/* 
+ * File:   Separate.h
+ * Author: rlcancian
+ *
+ * Created on 03 de Junho de 2019, 15:14
+ */
+
 #ifndef SEPARATE_H
 #define SEPARATE_H
 
-#include <string>
-#include <list>
-#include <assert.h>
-
 #include "ModelComponent.h"
-#include "Model.h"
-#include "Group.h"
 
+/*!
+ This component ...
+ */
 class Separate : public ModelComponent {
-public:
+public: // constructors
     Separate(Model* model);
     Separate(const Separate& orig);
     virtual ~Separate();
-public:
+public:  // virtual
     virtual std::string show();
-public:
+public:  // static
     static PluginInformation* GetPluginInformation();
     static ModelComponent* LoadInstance(Model* model, std::map<std::string, std::string>* fields);
-
-    void setSeparateName(std::string value);
-    void setSplitBatch(bool value);
-    void setAmountToDuplicate(unsigned int value);
-    void setTakeAllRepresentativeValues(bool value);
-protected:
+protected:  // virtual
     virtual void _execute(Entity* entity);
     virtual void _initBetweenReplications();
     virtual bool _loadInstance(std::map<std::string, std::string>* fields);
     virtual std::map<std::string, std::string>* _saveInstance();
     virtual bool _check(std::string* errorMessage);
-private:
-    unsigned int _amountToDup;
+public: // methods
+    void setSeparateName(std::string value);
+    void setSplitBatch(bool value);
+    void setAmountToDuplicate(std::string value);
+    void setTakeAllRepresentativeValues(bool value);
+    void setAttributeType(bool value);
+    
+private: // attributes 1:1
+private: // attributes 1:n
+    std::string _amountToDup;
     std::string _separateName;
     bool _splitBatch;
     bool _takeAllRepresentativeValues;
+    bool _attributeType = false;
 };
+
 
 #endif /* SEPARATE_H */
 

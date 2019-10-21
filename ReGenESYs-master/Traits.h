@@ -36,12 +36,12 @@
 #include "BuildSimulationModel03.h"
 #include "FirstExampleOfSimulation.h"
 #include "SecondExampleOfSimulation.h"
-#include "ThirdExampleOfSimultion.h"
-#include "FourthExampleOfSimulation.h"
 #include "GenesysGUI.h"
 #include "GenesysConsole.h"
 #include "TestEnterLeaveRoute.h"
-#include "TestSimulationControlAndSimulationResponse.h"
+#include "SlidingWindowModel.h"
+#include "TestRemove.h"
+#include "TestSeparate.h"
 
 //  Default implementations
 //statistics
@@ -77,8 +77,11 @@ template <> struct Traits<GenesysApplication_if> {
     //typedef FullSimulationOfComplexModel Application;
     //typedef FirstExampleOfSimulation Application;
     //typedef SecondExampleOfSimulation Application;
-    typedef FourthExampleOfSimulation Application;
-    //typedef TestSimulationControlAndSimulationResponse Application;
+    //typedef TestEnterLeaveRoute Application;
+    
+    //typedef SlidingWindowModel Application;
+    typedef TestRemove Application;
+    //typedef TestSeparate Application;
 };
 
 

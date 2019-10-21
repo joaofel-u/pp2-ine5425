@@ -17,7 +17,6 @@
 #include "Remove.h"
 #include "Model.h"
 #include "Queue.h"
-#include "Waiting.h"
 #include <string>
 
 Remove::Remove(Model* model) : ModelComponent(model, Util::TypeOf<Remove>()) {

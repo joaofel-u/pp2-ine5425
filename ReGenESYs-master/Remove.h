@@ -6,40 +6,44 @@
 
 /* 
  * File:   Remove.h
- * Author: rlcancian
- *
- * Created on 03 de Junho de 2019, 15:20
+ * Author: Group 5
  */
 
 #ifndef REMOVE_H
 #define REMOVE_H
 
+#include <string>
 #include "ModelComponent.h"
+#include "Plugin.h"
 
-/*!
- This component ...
- */
 class Remove : public ModelComponent {
-public: // constructors
+public:
     Remove(Model* model);
     Remove(const Remove& orig);
     virtual ~Remove();
-public:  // virtual
+public:
+    void setQueueName(std::string _queueName);
+    std::string getQueueName() const;
+    void setRank(std::string _rank);
+    std::string getRank() const;
+public:
     virtual std::string show();
-public:  // static
+public:
     static PluginInformation* GetPluginInformation();
     static ModelComponent* LoadInstance(Model* model, std::map<std::string, std::string>* fields);
-protected:  // virtual
+protected:
     virtual void _execute(Entity* entity);
     virtual void _initBetweenReplications();
     virtual bool _loadInstance(std::map<std::string, std::string>* fields);
     virtual std::map<std::string, std::string>* _saveInstance();
     virtual bool _check(std::string* errorMessage);
-private: // methods
-private: // attributes 1:1
-private: // attributes 1:n
-};
+private:
+    /* Queue Name: Name of the queue from which the entity will be removed. */
+    std::string _queueName = "Queue";
 
+    /* Rank of Entity: Rank of the entity to remove from within the queue. */
+    std::string _rank = "0";
+};
 
 #endif /* REMOVE_H */
 
