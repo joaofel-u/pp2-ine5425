@@ -264,6 +264,7 @@ bool ModelCheckerDefaultImpl1::checkSymbols() {
 	    //List<ModelComponent*>* components = _model->getComponents();
 	    for (std::list<ModelComponent*>::iterator it = _model->getComponentManager()->begin(); it != _model->getComponentManager()->end(); it++) {
 		res &= (*it)->Check((*it));
+                std::cout << (*it)->getName() << std::endl;
 	    }
 	}
 	Util::DecIndent();

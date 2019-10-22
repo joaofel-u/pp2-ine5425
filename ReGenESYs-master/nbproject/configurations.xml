@@ -353,11 +353,17 @@
           <itemPath>TestODE.h</itemPath>
           <itemPath>TestParser.cpp</itemPath>
           <itemPath>TestParser.h</itemPath>
+          <itemPath>TestRemove.cpp</itemPath>
+          <itemPath>TestRemove.h</itemPath>
+          <itemPath>TestSeparate.cpp</itemPath>
+          <itemPath>TestSeparate.h</itemPath>
           <itemPath>TestSimulationControlAndSimulationResponse.cpp</itemPath>
           <itemPath>TestSimulationControlAndSimulationResponse.h</itemPath>
         </logicalFolder>
         <itemPath>FullSimulationOfComplexModel.cpp</itemPath>
         <itemPath>FullSimulationOfComplexModel.h</itemPath>
+        <itemPath>SlidingWindowModel.cpp</itemPath>
+        <itemPath>SlidingWindowModel.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="UserInterfaces" projectFiles="true">
         <itemPath>GenesysConsole.cpp</itemPath>
@@ -830,6 +836,10 @@
       </item>
       <item path="SinkModelComponent.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="SlidingWindowModel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="SlidingWindowModel.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="SourceModelComponent.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SourceModelComponent.h" ex="false" tool="3" flavor2="0">
@@ -893,6 +903,14 @@
       <item path="TestParser.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TestParser.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="TestRemove.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TestRemove.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="TestSeparate.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TestSeparate.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="TestSimulationControlAndSimulationResponse.cpp"
             ex="false"
@@ -1432,6 +1450,10 @@
       </item>
       <item path="SinkModelComponent.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="SlidingWindowModel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="SlidingWindowModel.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="SourceModelComponent.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SourceModelComponent.h" ex="false" tool="3" flavor2="0">
@@ -1495,6 +1517,14 @@
       <item path="TestParser.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TestParser.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="TestRemove.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TestRemove.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="TestSeparate.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TestSeparate.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="TestSimulationControlAndSimulationResponse.cpp"
             ex="false"

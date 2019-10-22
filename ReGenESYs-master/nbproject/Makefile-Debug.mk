@@ -131,6 +131,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/SimulationScenario.o \
 	${OBJECTDIR}/Simulator.o \
 	${OBJECTDIR}/SinkModelComponent.o \
+	${OBJECTDIR}/SlidingWindowModel.o \
 	${OBJECTDIR}/SourceModelComponent.o \
 	${OBJECTDIR}/Start.o \
 	${OBJECTDIR}/Station.o \
@@ -146,6 +147,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/TestInputAnalyserTools.o \
 	${OBJECTDIR}/TestODE.o \
 	${OBJECTDIR}/TestParser.o \
+	${OBJECTDIR}/TestRemove.o \
+	${OBJECTDIR}/TestSeparate.o \
 	${OBJECTDIR}/TestSimulationControlAndSimulationResponse.o \
 	${OBJECTDIR}/TestStatistics.o \
 	${OBJECTDIR}/ThirdExampleOfSimulation.o \
@@ -181,11 +184,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/rebornedgenesys
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/regenesys-master
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/rebornedgenesys: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/regenesys-master: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/rebornedgenesys ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/regenesys-master ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/Access.o: Access.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
@@ -667,6 +670,11 @@ ${OBJECTDIR}/SinkModelComponent.o: SinkModelComponent.cpp nbproject/Makefile-${C
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SinkModelComponent.o SinkModelComponent.cpp
 
+${OBJECTDIR}/SlidingWindowModel.o: SlidingWindowModel.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SlidingWindowModel.o SlidingWindowModel.cpp
+
 ${OBJECTDIR}/SourceModelComponent.o: SourceModelComponent.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -741,6 +749,16 @@ ${OBJECTDIR}/TestParser.o: TestParser.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TestParser.o TestParser.cpp
+
+${OBJECTDIR}/TestRemove.o: TestRemove.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TestRemove.o TestRemove.cpp
+
+${OBJECTDIR}/TestSeparate.o: TestSeparate.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TestSeparate.o TestSeparate.cpp
 
 ${OBJECTDIR}/TestSimulationControlAndSimulationResponse.o: TestSimulationControlAndSimulationResponse.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}

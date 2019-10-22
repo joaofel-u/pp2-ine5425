@@ -90,6 +90,10 @@ void Hold::setQueueName(std::string _name) throw() {
         throw std::invalid_argument("Queue does not exist");
 }
 
+void Hold::setQueue(Queue* queue) {
+    this->_queue = queue;
+}
+
 Hold::Type Hold::getType() const {
     return this->_type;
 }

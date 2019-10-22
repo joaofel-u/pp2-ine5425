@@ -116,6 +116,7 @@ int TestRemove::main(int argc, char** argv) {
     
     /* Connection 1. */
     createCarro->getNextComponents()->insert(hold1);
+    /* Necessidade de conectar saida hold em algum lugar. */
     
     /* Connection 2. */
     createComprador->getNextComponents()->insert(remove1);
