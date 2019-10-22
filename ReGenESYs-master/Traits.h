@@ -107,6 +107,7 @@ template <> struct Traits<Parser_if> {
 template <> struct Traits<Model> {
     static const bool debugged = true;
     static const Util::TraceLevel traceLevel = Util::TraceLevel::simulation;
+    //static const Util::TraceLevel traceLevel = Util::TraceLevel::mostDetailed;
 };
 
 template <> struct Traits<ModelPersistence_if> {

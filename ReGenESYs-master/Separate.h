@@ -36,7 +36,6 @@ protected:  // virtual
     virtual std::map<std::string, std::string>* _saveInstance();
     virtual bool _check(std::string* errorMessage);
 public: // methods
-    void setSeparateName(std::string value);
     void setSplitBatch(bool value);
     void setAmountToDuplicate(std::string value);
     void setTakeAllRepresentativeValues(bool value);
@@ -45,12 +44,9 @@ public: // methods
 private: // attributes 1:1
 private: // attributes 1:n
     std::string _amountToDup;
-    std::string _separateName;
-    bool _splitBatch;
+    bool _splitBatch; /* Separate::Type == SplitExistingBatch? */
     bool _takeAllRepresentativeValues;
     bool _attributeType = false;
 };
 
-
 #endif /* SEPARATE_H */
-

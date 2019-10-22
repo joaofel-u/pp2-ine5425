@@ -112,9 +112,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     Station* station_envioTransmissor = new Station(elements, "EnvioTransmissor");
     Leave* leave_envioTransmissor = new Leave(model);
     Separate* separate_criaEsperaAck = new Separate(model);
-    Enter* enter_goToAguardeAck = new Enter(model);
-    Station* station_goToAguardeAck = new Station(elements, "GoToAguardeAck");
-    Leave* leave_goToAguardeAck = new Leave(model);
+    Route* route_goToAguardeAck = new Route(model);
     Seize* seize_alocaCanal = new Seize(model);
     Delay* delay_atrasoDeTransmissao = new Delay(model);
     Release* release_livraCanal = new Release(model);
@@ -358,27 +356,24 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(leave_envioTransmissor);
     
     
-    /*
-     *  Separate 'CriaEsperaAck'.
-     * 
-     * @todo See 'Separate' implementation. 
-     * @todo Define correct parameters.
-     */
+    /* Separate 'CriaEsperaAck'. */
     separate_criaEsperaAck->setName("CriaEsperaAck");
+    separate_criaEsperaAck->setAmountToDuplicate("1");
+    separate_criaEsperaAck->setSplitBatch(0);
+    /* @todo See replication costs. 
+     * separate_criaEsperaAck->setPercentCostToDup("50");
+     */
     components->insert(separate_criaEsperaAck);
     
     
-    /* Station 'GoToAguardeAck'. */
-    elements->insert(Util::TypeOf<Station>(), station_goToAguardeAck);
-    
-    enter_goToAguardeAck->setName("EnterGoToAguardeAck");
-    enter_goToAguardeAck->setStation(station_goToAguardeAck);
-    components->insert(enter_goToAguardeAck);
-    
-    leave_goToAguardeAck->setName("LeaveGoToAguardeAck");
-    leave_goToAguardeAck->setStation(station_goToAguardeAck);
-    components->insert(leave_goToAguardeAck);
-    
+    /* Route 'GoToAguardeAck'. */
+    route_goToAguardeAck->setName("GoToAguardeAck");
+    route_goToAguardeAck->setRouteTimeExpression("0");
+    route_goToAguardeAck->setRouteTimeTimeUnit(Util::TimeUnit::second);
+    route_goToAguardeAck->setRouteDestinationType(Route::DestinationType::Station);
+    route_goToAguardeAck->setStation(station_aguardeAck);
+    components->insert(route_goToAguardeAck);
+
     
     /* Seize 'AlocaCanal'. */
     Resource* resource_canalDeTransmissaoPacote = new Resource(elements, "CanalDeTransmissaoPacote");
@@ -415,13 +410,13 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(release_livraCanal);
     
     
-    /* 
-     * Separate 'CriaTimeout'.
-     * 
-     * @todo See 'Separate' implementation. 
-     * @todo Define correct parameters.
-     */ 
+    /* Separate 'CriaTimeout'. */ 
     separate_criaTimeout->setName("CriaTimeout");
+    separate_criaTimeout->setAmountToDuplicate("1");
+    separate_criaTimeout->setSplitBatch(0);
+    /* @todo See replication costs. 
+     * separate_criaTimeout->setPercentCostToDup("50");
+     */
     components->insert(separate_criaTimeout);
     
     
@@ -447,12 +442,12 @@ int SlidingWindowModel::main(int argc, char** argv) {
     enter_envioTransmissor->getNextComponents()->insert(leave_envioTransmissor);
     leave_envioTransmissor->getNextComponents()->insert(separate_criaEsperaAck);
     separate_criaEsperaAck->getNextComponents()->insert(seize_alocaCanal);
-    /* @todo Insert second out from separate_criaEsperaAck. */
+    separate_criaEsperaAck->getNextComponents()->insert(route_goToAguardeAck);
     seize_alocaCanal->getNextComponents()->insert(delay_atrasoDeTransmissao);
     delay_atrasoDeTransmissao->getNextComponents()->insert(release_livraCanal);
     release_livraCanal->getNextComponents()->insert(separate_criaTimeout);
     separate_criaTimeout->getNextComponents()->insert(route_goToOutTransmissor);
-    /* @todo Insert second out from separate_criaTimeout. */
+    separate_criaTimeout->getNextComponents()->insert(route_goToCountTimeout);
     
     
     /*
@@ -460,6 +455,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
      */
     /* Station 'AguardeAck'. */
     elements->insert(Util::TypeOf<Station>(), station_aguardeAck);
+    station_aguardeAck->setEnterIntoStationComponent(enter_aguardeAck);
     
     enter_aguardeAck->setName("EnterAguardeAck");
     enter_aguardeAck->setStation(station_aguardeAck);

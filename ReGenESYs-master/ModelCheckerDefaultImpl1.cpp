@@ -47,6 +47,7 @@ bool ModelCheckerDefaultImpl1::checkAll() {
 bool ModelCheckerDefaultImpl1::_recursiveConnectedTo(PluginManager* pluginManager, ModelComponent* comp, List<ModelComponent*>* visited, List<ModelComponent*>* unconnected, bool* drenoFound) {
     visited->insert(comp);
     _model->getTraceManager()->trace(Util::TraceLevel::mostDetailed, "Connected to component " + comp->getName());
+    std::cout << comp->getName() << std::endl;
     Plugin* plugin = pluginManager->find(comp->getTypename());
     assert(plugin!= nullptr);
     if (plugin->getPluginInfo()->isSink() || (plugin->getPluginInfo()->isSendTransfer() && comp->getNextComponents()->size()==0)) {//(dynamic_cast<SinkModelComponent*> (comp) != nullptr) { 
@@ -264,7 +265,6 @@ bool ModelCheckerDefaultImpl1::checkSymbols() {
 	    //List<ModelComponent*>* components = _model->getComponents();
 	    for (std::list<ModelComponent*>::iterator it = _model->getComponentManager()->begin(); it != _model->getComponentManager()->end(); it++) {
 		res &= (*it)->Check((*it));
-                std::cout << (*it)->getName() << std::endl;
 	    }
 	}
 	Util::DecIndent();
