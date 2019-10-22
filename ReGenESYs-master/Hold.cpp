@@ -28,8 +28,28 @@ Hold::~Hold() {
 }
 
 std::string Hold::show() {
-    return ModelComponent::show() +
-	    "";
+    std::string res = ModelComponent::show() +
+	    ", Type=" + std::to_string(static_cast<int> (this->_type)) +
+            ", QueueName" + (this->_queue->getName());
+
+    switch (this->_type) {
+        case Type::ScanForCondition:
+            res += ", Condition=" + (this->_condition);
+            break;
+
+        case Type::WaitForSignal:
+            res += ", waitForValue=" + (this->_waitForValue) +
+                    ", limit=" + std::to_string(this->_limit);
+            break;
+
+        case Type::InfiniteHold:
+            break;
+
+        default:  // UNREACHABLE
+            break;
+    }
+
+    return res;
 }
 
 PluginInformation* Hold::GetPluginInformation() {
@@ -47,7 +67,15 @@ ModelComponent* Hold::LoadInstance(Model* model, std::map<std::string, std::stri
 
 
 void Hold::setWaitForValueExpr(std::string _expr) {
-    this->_wait_for_value = _expr;
+    this->_waitForValue = _expr;
+}
+
+void Hold::setLimit(int _limit) {
+    this->_limit = _limit;
+}
+
+void Hold::setCondition(std::string _condition) {
+    this->_condition = _condition;
 }
 
 void Hold::setType(Type _type) {
@@ -56,11 +84,10 @@ void Hold::setType(Type _type) {
 
 void Hold::setQueueName(std::string _name) throw() {
     Queue* queue = dynamic_cast<Queue*>(_model->getElementManager()->getElement(Util::TypeOf<Queue>(), _name));
-    if (queue != nullptr) {
-        _queue = queue;
-    } else {
+    if (queue != nullptr)
+        this->_queue = queue;
+    else
         throw std::invalid_argument("Queue does not exist");
-    }
 }
 
 Hold::Type Hold::getType() const {
@@ -68,41 +95,79 @@ Hold::Type Hold::getType() const {
 }
 
 std::string Hold::getWaitForValueExpr() const {
-    return this->_wait_for_value;
+    return this->_waitForValue;
+}
+
+int Hold::getLimit() const {
+    return this->_limit;
+}
+
+std::string Hold::getCondition() const {
+    return this->_condition;
 }
 
 std::string Hold::getQueueName() const {
-    return _queue->getName();
+    return this->_queue->getName();
+}
+
+Queue* Hold::getQueue() const {
+    return this->_queue;
 }
 
 void Hold::_execute(Entity* entity) {
-    if (_type == Type::ScanForCondition) {
+    if (this->_type == Type::ScanForCondition)
+    {
+        /* Evaluate corretude. */
         Waiting* waiting = new Waiting(entity, this, _model->getSimulation()->getSimulatedTime());
         this->_queue->insertElement(waiting);
-        double condition = _model->parseExpression((_wait_for_value));
-	    _model->getTraceManager()->traceSimulation(Util::TraceLevel::blockInternal, _model->getSimulation()->getSimulatedTime(), entity, this, _wait_for_value + "the condition evaluated to " + std::to_string(condition));
+        double condition = _model->parseExpression((_waitForValue));
+	    _model->getTraceManager()->traceSimulation(Util::TraceLevel::blockInternal, _model->getSimulation()->getSimulatedTime(), entity, this, _waitForValue + "the condition evaluated to " + std::to_string(condition));
         if (condition) {
             _model->sendEntityToComponent(entity, this->getNextComponents()->front(), 0.0);
             return;
         }
     }
-    else if (_type == Type::WaitForSignal) {
-        Queue* signal_queue = dynamic_cast<Queue*>(_model->getElementManager()->getElement(Util::TypeOf<Queue>(), _wait_for_value));
+    else /* WaitForSignal and InfiniteHold. */
+    {
         Waiting* waiting = new Waiting(entity, this, _model->getSimulation()->getSimulatedTime());
         this->_queue->insertElement(waiting);
-        signal_queue->insertElement(waiting);        
+        return; 
     }
 }
 
-void Hold::release_signal(int _limit) {
-	for(int i = 0; i < _queue->size(); i++) {
-		Waiting* waiting = _queue->getAtRank(i);
+/* @todo See if the condition check is only in the first queue element. */
+void Hold::release_signal(int signal, int recvLimit) {
+    int limit;            /* Max number of entities that can be released. */
+    double waitingSignal; /* Holds the waiting signal value of an entity. */
+    
+    if (this->_limit == 0)
+        limit = recvLimit;
+    else if (recvLimit == 0)
+        limit = this->_limit;
+    else
+        limit = std::min(this->_limit, recvLimit);
 
-		_model->sendEntityToComponent(waiting->getEntity(), this->getNextComponents()->front(), 0.0);
-		if (i >= _limit) {
-			break;
-		}
-	}
+    /* Releases the entities from the queue. */
+    for (int i = 0; i < this->_queue->size(); ++i)
+    {
+        waitingSignal = _model->parseExpression((_waitForValue));
+        
+        if (waitingSignal == signal)
+        {
+            Waiting* waiting = _queue->getAtRank(i);
+            _model->sendEntityToComponent(waiting->getEntity(), this->getNextComponents()->front(), 0.0);
+            this->_limit--;
+            this->_queue->removeElement(waiting);
+            i--;
+        }
+        else
+        {
+            continue;
+        }
+        
+        if (_limit == 0)
+            break;
+    }
 }
 
 void Hold::_initBetweenReplications() {
@@ -112,22 +177,48 @@ void Hold::_initBetweenReplications() {
 bool Hold::_loadInstance(std::map<std::string, std::string>* fields) {
     bool res = ModelComponent::_loadInstance(fields);
     if (res) {
-        
         std::string queueName = ((*(fields->find("queueName"))).second);
-	    Queue* queue = dynamic_cast<Queue*> (_model->getElementManager()->getElement(Util::TypeOf<Queue>(), queueName));
+	Queue* queue = dynamic_cast<Queue*> (_model->getElementManager()->getElement(Util::TypeOf<Queue>(), queueName));
         this->_queue = queue;
-        this->_wait_for_value = ((*(fields->find("waitForValue"))).second);
+        this->_waitForValue = ((*(fields->find("waitForValue"))).second);
+        this->_limit = std::stoi((*(fields->find("limit"))).second);
+        this->_condition = ((*(fields->find("condition"))).second);
+        this->_type = static_cast<Hold::Type> (std::stoi((*fields->find("type")).second));
     }
+
     return res;
 }
 
 std::map<std::string, std::string>* Hold::_saveInstance() {
     std::map<std::string, std::string>* fields = ModelComponent::_saveInstance(); //Util::TypeOf<Seize>());
     fields->emplace("queueName", (this->_queue->getName()));
-    fields->emplace("waitForValue", (this->_wait_for_value));
+    fields->emplace("waitForValue", (this->_waitForValue));
+    fields->emplace("limit", std::to_string(this->_limit));
+    fields->emplace("condition", (this->_condition));
+    fields->emplace("type", std::to_string(static_cast<int> (this->_type)));
     return fields;
 }
 
 bool Hold::_check(std::string* errorMessage) {
-    return true;
+    bool resultAll = true;
+    switch (this->_type) {
+        case Type::ScanForCondition:
+            resultAll &= _model->checkExpression(this->_condition, "Condition", errorMessage);
+            break;
+
+        case Type::WaitForSignal:
+            resultAll &= this->_limit >= 0;
+            resultAll &= _model->checkExpression(this->_waitForValue, "Wait for Value", errorMessage);
+            break;
+
+        case Type::InfiniteHold:
+            break;
+
+        default:  // UNREACHABLE
+            return false;
+    }
+
+    resultAll &= _model->getElementManager()->check(Util::TypeOf<Queue>(), this->_queue, "Queue", errorMessage);
+
+    return resultAll;
 }

@@ -26,6 +26,7 @@ public:
         ScanForCondition=1,
         InfiniteHold=2
     };
+    
     Hold(Model* model);
     Hold(const Hold& orig);
     virtual ~Hold();
@@ -35,14 +36,20 @@ public:
     static ModelComponent* LoadInstance(Model* model, std::map<std::string, std::string>* fields);
 
     void setWaitForValueExpr(std::string _expr);
+    void setLimit(int _limit);
+    void setCondition(std::string _condition);
     void setType(Type _type);
     void setQueueName(std::string _name) throw();
+    void setQueue(Queue* queue);
 
-    Type getType() const;
     std::string getWaitForValueExpr() const;
+    int getLimit() const;
+    std::string getCondition() const;
+    Type getType() const;
     std::string getQueueName() const;
+    Queue* getQueue() const;
 
-    void release_signal(int _limit);
+    void release_signal(int signal, int recvLimit);
 
 protected:
     virtual void _execute(Entity* entity);
@@ -52,8 +59,10 @@ protected:
     virtual bool _check(std::string* errorMessage);
 
 private:
-    std::string _wait_for_value = "1";
     Type _type = Type::WaitForSignal;
+    std::string _waitForValue = "1";
+    int _limit = 0;
+    std::string _condition = "";
     Queue* _queue;
 };
 

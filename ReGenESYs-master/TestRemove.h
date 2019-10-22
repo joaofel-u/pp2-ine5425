@@ -15,12 +15,15 @@
 #define TESTREMOVE_H
 
 #include "BaseConsoleGenesysApplication.h"
+#include "Model.h"
 
 class TestRemove: public BaseConsoleGenesysApplication {
 public:
     TestRemove();
+    TestRemove(const TestRemove& orig);
+    virtual ~TestRemove();
 public:
-    int main(int argc, char** argv);
+    virtual int main(int argc, char** argv);
 };
 
 #endif /* TESTREMOVE_H */

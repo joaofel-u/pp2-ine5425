@@ -31,8 +31,9 @@
 #include "Resource.h"
 
 
-TestRemove::TestRemove() {
-}
+TestRemove::TestRemove() {}
+TestRemove::TestRemove(const TestRemove& orig) {}
+TestRemove::~TestRemove() {}
 
 /**
  * This is the main function of the application. 
@@ -54,11 +55,21 @@ int TestRemove::main(int argc, char** argv) {
     // get easy access to classes used to insert components and elements into a model
     ComponentManager* components = model->getComponentManager();
     ElementManager* elements = model->getElementManager();
+    
+    /*
+     * @brief Defines the replication params.
+     */
+    ModelInfo* infos = model->getInfos();
+    infos->setAnalystName("Joao Fellipe Uller");
+    infos->setNumberOfReplications(10);
+    infos->setReplicationLength(2);
+    infos->setReplicationLengthTimeUnit(Util::TimeUnit::hour);
+    infos->setWarmUpPeriod(0);
+    infos->setWarmUpPeriodTimeUnit(Util::TimeUnit::minute);
 
     //
     // build the simulation model
     //
-
     simulator->getTraceManager()->setTraceLevel(Util::TraceLevel::blockArrival);
 
     // create a (Source)ModelElement of type EntityType, used by a ModelComponent that follows
@@ -73,6 +84,7 @@ int TestRemove::main(int argc, char** argv) {
     createCarro->setEntityType(carro);
     createCarro->setTimeBetweenCreationsExpression("10");
     createCarro->setTimeUnit(Util::TimeUnit::minute);
+    createCarro->setFirstCreation(0.0);
     components->insert(createCarro);
 
     Queue* queueHold = new Queue(elements, "queue1");
@@ -80,12 +92,14 @@ int TestRemove::main(int argc, char** argv) {
     elements->insert(Util::TypeOf<Queue>(), queueHold);
     
     Hold* hold1 = new Hold(model);
-    
+    hold1->setType(Hold::Type::InfiniteHold);
+    hold1->setQueue(queueHold);
     
     Create* createComprador = new Create(model);
     createComprador->setEntityType(comprador);
     createComprador->setTimeBetweenCreationsExpression("20");
     createComprador->setTimeUnit(Util::TimeUnit::minute);
+    createComprador->setFirstCreation(5.0);
     components->insert(createComprador);
     
     Dispose* disposeComprador = new Dispose(model);
@@ -95,6 +109,8 @@ int TestRemove::main(int argc, char** argv) {
     components->insert(disposeCarro);
     
     Remove* remove1 = new Remove(model);
+    remove1->setQueueName("queue1");
+    remove1->setRank("1");
     components->insert(remove1);
     
     
@@ -104,9 +120,7 @@ int TestRemove::main(int argc, char** argv) {
     /* Connection 2. */
     createComprador->getNextComponents()->insert(remove1);
     remove1->getNextComponents()->insert(disposeComprador);
-    /*insert remove entity destiny*/
-    
-    
+    remove1->getNextComponents()->insert(disposeCarro);
     
     // insert the model into the simulator 
     simulator->getModelManager()->insert(model);
@@ -114,7 +128,6 @@ int TestRemove::main(int argc, char** argv) {
     // if the model is ok then save the model into a text file 
     if (model->checkModel()) {
 	model->saveModel("./temp/testRemove.txt");
-	// if the model is saved into a file, it could be just loaded instead of built (as above)
     }
 
     // execute the simulation util completed and show the report

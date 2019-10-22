@@ -20,7 +20,7 @@ class SlidingWindowModel: public BaseConsoleGenesysApplication {
 public:
     SlidingWindowModel();
 public:
-    int main(int argc, char** argv);
+    virtual int main(int argc, char** argv);
 };
 
 #endif /* SLIDINGWINDOWMODEL_H */

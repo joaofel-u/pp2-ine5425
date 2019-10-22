@@ -20,15 +20,11 @@ inline bool instanceof(const T*) {
    return std::is_base_of<Base, T>::value;
 }
 
-//TODO Colocar o instance of antes daquele cast ali.
-
 void Signal::_execute(Entity* entity) {
-    for(int i = 0; i < _holds_waiting_signal->size(); i++) {
-        Waiting* waiting = _holds_waiting_signal->getAtRank(i);
-
-        auto component = waiting->getComponent();
-        Hold* h = ((Hold*)(component));
-        h->release_signal(limit);
+    for(auto it = this->_signalListeners->front(); it != this->_signalListeners->last(); it = this->_signalListeners->next()) {
+        Hold* h = dynamic_cast<Hold*>(it);
+        int signalValue = _model->parseExpression((this->_signalValue));
+        h->release_signal(signalValue, this->_limit);
     }
 }
 std::string Signal::show() {
@@ -42,18 +38,20 @@ void Signal::_initBetweenReplications() {
     
 }
 
-
-void Signal::setQueueName(std::string _name) throw() {
-    Queue* queue = dynamic_cast<Queue*>(_model->getElementManager()->getElement(Util::TypeOf<Queue>(), _name));
-    if (queue != nullptr) {
-        _holds_waiting_signal = queue;
-    } else {
-        throw std::invalid_argument("Queue does not exist");
-    }
+void Signal::setSignalValue(std::string expr) {
+    this->_signalValue = expr;
 }
 
-std::string Signal::getQueueName() const {
-    return _holds_waiting_signal->getName();
+std::string Signal::getSignalValue() {
+    return this->_signalValue;
+}
+
+void Signal::setLimit(int limit) {
+    this->_limit = limit;
+}
+
+int Signal::getLimit() {
+    return this->_limit;
 }
 
 ModelComponent* Signal::LoadInstance(Model* model, std::map<std::string, std::string>* fields) {

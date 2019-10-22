@@ -27,6 +27,7 @@
 #include "Hold.h"
 #include "Leave.h"
 #include "Record.h"
+#include "Remove.h"
 #include "Route.h"
 #include "Seize.h"
 #include "Separate.h"
@@ -665,13 +666,11 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(decide_removeFilaInteira);
     
     
-    /* Remove 'RemoveDaFila'.
-     * 
-     * @todo See 'Remove' implementation.
-     * @todo Define correct parameters.
-     */
+    /* Remove 'RemoveDaFila'. */
     remove_removeDaFila = new Remove(model);
     remove_removeDaFila->setName("RemoveDaFila");
+    remove_removeDaFila->setQueueName("FilaAck");
+    remove_removeDaFila->setRank("1");
     components->insert(remove_removeDaFila);
     
     
@@ -709,7 +708,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     decide_removeFilaInteira->getNextComponents()->insert(remove_removeDaFila);
     decide_removeFilaInteira->getNextComponents()->insert(dispose_descartaTimeout);
     remove_removeDaFila->getNextComponents()->insert(decide_removeFilaInteira);
-    /* removed entity from remove go to contaReenviados. */
+    remove_removeDaFila->getNextComponents()->insert(record_contaReenviados);
     record_contaReenviados->getNextComponents()->insert(route_reenviaPacote);
     
     

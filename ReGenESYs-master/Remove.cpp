@@ -69,33 +69,24 @@ std::string Remove::getRank() const {
 * is processed before the removed entity
 */
 void Remove::_execute(Entity* entity) {
-    _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "X4 remove component show: " + this->show());
-
     std::string queueName = this->_queueName;
-    int rankToRemove = _model->parseExpression(this->_rank);
+    int rankToRemove = (_model->parseExpression(this->_rank)) - 1;  /* Correction factor to underlying list starting at 0. */
 
-    /* Gets the specified queue from its name */
+    /* Gets the specified queue from its name. */
     Queue* queue = dynamic_cast<Queue*> (_model->getElementManager()->getElement(Util::TypeOf<Queue>(), queueName));
     if (queue == nullptr)
         throw std::invalid_argument("Queue does not exist");
 	
-    /* Get the element (entity) within the queue */
+    /* Get the element (entity) within the queue. */
     Waiting* element = queue->getAtRank(rankToRemove);
-	
-    /* Show the queue before removal, just for checking */
-    _model->getTraceManager()->trace(Util::TraceLevel::blockInternal,"Queue before: " + queue->show());
 
     if(element != nullptr) {
         queue->removeElement(element);
-        _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "X4 Remove component has removed: " + element->getEntity()->show());
-        /* Removed element goes separated */
+        /* Removed element goes separated. */
         this->_model->sendEntityToComponent(element->getEntity(), this->getNextComponents()->getAtRank(1), 0.0);
     }
 
-    /* Show the queue after removal, just for checking */
-    _model->getTraceManager()->trace(Util::TraceLevel::blockInternal,"Queue after: " + queue->show());
-
-    /* The original queue goes to the "normal" path */
+    /* The original entity goes to the "normal" path. */
     this->_model->sendEntityToComponent(entity, this->getNextComponents()->getAtRank(0), 0.0);
 }
 

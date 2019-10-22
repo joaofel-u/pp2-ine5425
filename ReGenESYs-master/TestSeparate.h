@@ -20,7 +20,7 @@ class TestSeparate: public BaseConsoleGenesysApplication {
 public:
     TestSeparate();
 public:
-    int main(int argc, char** argv);
+    virtual int main(int argc, char** argv);
 };
 
 #endif /* TESTSEPARATE_H */

@@ -129,7 +129,6 @@ void Separate::_execute(Entity* entity) {
       /* Duplicate the existing entity */
         traceManager->trace(Util::TraceLevel::blockInternal, "Duplicate the existing entity");
 
-
         Entity* duplicateEntity;
 
         _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending the original entity forward to the first connection");

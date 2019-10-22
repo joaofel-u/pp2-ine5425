@@ -66,6 +66,11 @@ Entity* EntityGroup::first() {
     return _list->front();
 }
 
+List<Entity*>* EntityGroup::getList() const {
+    return this->_list;
+}
+
+
 //List<Waiting*>* Group::getList() const {
 //	return _list;
 //}
