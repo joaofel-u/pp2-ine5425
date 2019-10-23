@@ -32,7 +32,6 @@
 #include "Seize.h"
 #include "Separate.h"
 #include "Signal.h"
-#include "Station.h"
 #include "Release.h"
 
 
@@ -42,6 +41,7 @@
 #include "EntityType.h"
 #include "Queue.h"
 #include "Resource.h"
+#include "Station.h"
 #include "Variable.h"
 
 
@@ -508,6 +508,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(route_reciclaPacotes);
     
     /* Connect the components that control the ACK waiting. */
+    enter_aguardeAck->getNextComponents()->insert(leave_aguardeAck);
     leave_aguardeAck->getNextComponents()->insert(hold_holdAck);
     hold_holdAck->getNextComponents()->insert(release_livraJanela);
     release_livraJanela->getNextComponents()->insert(record_contaEnviadosComSucesso);
@@ -560,6 +561,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /* Connect the components that control the ACK received check. */
+    enter_inTransmissor->getNextComponents()->insert(leave_inTransmissor);
     leave_inTransmissor->getNextComponents()->insert(decide_verificaFilaAck);
     decide_verificaFilaAck->getNextComponents()->insert(decide_verificaAck);
     decide_verificaFilaAck->getNextComponents()->insert(dispose_ignoraAck);
@@ -642,6 +644,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /* Connect the components that control the ACK timeout. */
+    enter_countTimeout->getNextComponents()->insert(leave_countTimeout);
     leave_countTimeout->getNextComponents()->insert(delay_timeoutAck);
     delay_timeoutAck->getNextComponents()->insert(decide_verificaFilaAckTimeout);
     decide_verificaFilaAckTimeout->getNextComponents()->insert(decide_verificaTimeout);
@@ -729,6 +732,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /* Connect the components of 'Canal de Transmissao - Transmissor > Receptor'*/
+    enter_outTransmissor->getNextComponents()->insert(leave_outTransmissor);
     leave_outTransmissor->getNextComponents()->insert(seize_alocaRotaPacote);
     seize_alocaRotaPacote->getNextComponents()->insert(delay_latenciaCanal);
     delay_latenciaCanal->getNextComponents()->insert(release_livraRotaPacote);
@@ -810,6 +814,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /* Connect the components of 'Canal de Transmissao - Receptor > Transmissor'*/
+    enter_outReceptor->getNextComponents()->insert(leave_outReceptor);
     leave_outReceptor->getNextComponents()->insert(seize_alocaRotaAck);
     seize_alocaRotaAck->getNextComponents()->insert(delay_latenciaCanalAck);
     delay_latenciaCanalAck->getNextComponents()->insert(release_livraRotaAck);
@@ -857,6 +862,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /* Connect the components of 'Receptor'. */
+    enter_inReceptor->getNextComponents()->insert(leave_inReceptor);
     leave_inReceptor->getNextComponents()->insert(assign_converteAck);
     assign_converteAck->getNextComponents()->insert(assign_atribuiDelaysAck);
     assign_atribuiDelaysAck->getNextComponents()->insert(route_goToEnvioReceptor);
@@ -923,6 +929,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     
     /* Connect the components of 'Receptor'. */
+    enter_envioReceptor->getNextComponents()->insert(leave_envioReceptor);
     leave_envioReceptor->getNextComponents()->insert(seize_alocaCanalAck);
     seize_alocaCanalAck->getNextComponents()->insert(delay_atrasoDeTransmissaoAck);
     delay_atrasoDeTransmissaoAck->getNextComponents()->insert(release_livraCanalAck);

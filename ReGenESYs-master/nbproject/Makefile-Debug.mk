@@ -87,6 +87,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Match.o \
 	${OBJECTDIR}/Model.o \
 	${OBJECTDIR}/ModelCheckerDefaultImpl1.o \
+	${OBJECTDIR}/ModelCheckerImpl2.o \
 	${OBJECTDIR}/ModelComponent.o \
 	${OBJECTDIR}/ModelElement.o \
 	${OBJECTDIR}/ModelInfo.o \
@@ -104,6 +105,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/PickUp.o \
 	${OBJECTDIR}/Plugin.o \
 	${OBJECTDIR}/PluginConnectorDummyImpl1.o \
+	${OBJECTDIR}/PluginConnectorDummyImpl2.o \
 	${OBJECTDIR}/PluginInformation.o \
 	${OBJECTDIR}/PluginManager.o \
 	${OBJECTDIR}/ProbDistrib.o \
@@ -144,6 +146,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Store.o \
 	${OBJECTDIR}/Submodel.o \
 	${OBJECTDIR}/TestEnterLeaveRoute.o \
+	${OBJECTDIR}/TestHoldSignal.o \
 	${OBJECTDIR}/TestInputAnalyserTools.o \
 	${OBJECTDIR}/TestODE.o \
 	${OBJECTDIR}/TestParser.o \
@@ -450,6 +453,11 @@ ${OBJECTDIR}/ModelCheckerDefaultImpl1.o: ModelCheckerDefaultImpl1.cpp nbproject/
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ModelCheckerDefaultImpl1.o ModelCheckerDefaultImpl1.cpp
 
+${OBJECTDIR}/ModelCheckerImpl2.o: ModelCheckerImpl2.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ModelCheckerImpl2.o ModelCheckerImpl2.cpp
+
 ${OBJECTDIR}/ModelComponent.o: ModelComponent.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -534,6 +542,11 @@ ${OBJECTDIR}/PluginConnectorDummyImpl1.o: PluginConnectorDummyImpl1.cpp nbprojec
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PluginConnectorDummyImpl1.o PluginConnectorDummyImpl1.cpp
+
+${OBJECTDIR}/PluginConnectorDummyImpl2.o: PluginConnectorDummyImpl2.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PluginConnectorDummyImpl2.o PluginConnectorDummyImpl2.cpp
 
 ${OBJECTDIR}/PluginInformation.o: PluginInformation.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
@@ -734,6 +747,11 @@ ${OBJECTDIR}/TestEnterLeaveRoute.o: TestEnterLeaveRoute.cpp nbproject/Makefile-$
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TestEnterLeaveRoute.o TestEnterLeaveRoute.cpp
+
+${OBJECTDIR}/TestHoldSignal.o: TestHoldSignal.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TestHoldSignal.o TestHoldSignal.cpp
 
 ${OBJECTDIR}/TestInputAnalyserTools.o: TestInputAnalyserTools.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
