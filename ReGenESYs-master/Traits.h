@@ -83,9 +83,9 @@ template <> struct Traits<GenesysApplication_if> {
     //typedef TestEnterLeaveRoute Application;
     
     //typedef SlidingWindowModel Application;
-    typedef TestRemove Application;
+    //typedef TestRemove Application;
     //typedef TestSeparate Application;
-    //typedef TestHoldSignal Application;
+    typedef TestHoldSignal Application;
 };
 
 

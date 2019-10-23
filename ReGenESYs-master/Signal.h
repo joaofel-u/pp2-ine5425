@@ -3,6 +3,7 @@
 
 #include "ModelComponent.h"
 #include "List.h"
+#include "Hold.h"
 
 class Signal: public ModelComponent {
 public:
@@ -18,11 +19,12 @@ public:
     
     std::string getSignalValue();
     int getLimit();
+    List<Hold*>* getListeners();
 
 private:
     int _limit = 10;
     std::string _signalValue;
-    List<ModelComponent*>* _signalListeners;
+    List<Hold*>* _signalListeners;
     
 protected:
     virtual void _execute(Entity* entity);

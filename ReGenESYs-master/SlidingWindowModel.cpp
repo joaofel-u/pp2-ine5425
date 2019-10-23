@@ -360,9 +360,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     separate_criaEsperaAck->setName("CriaEsperaAck");
     separate_criaEsperaAck->setAmountToDuplicate("1");
     separate_criaEsperaAck->setSplitBatch(0);
-    /* @todo See replication costs. 
-     * separate_criaEsperaAck->setPercentCostToDup("50");
-     */
+    separate_criaEsperaAck->setPctCostToDuplicate("50");
     components->insert(separate_criaEsperaAck);
     
     
@@ -414,9 +412,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     separate_criaTimeout->setName("CriaTimeout");
     separate_criaTimeout->setAmountToDuplicate("1");
     separate_criaTimeout->setSplitBatch(0);
-    /* @todo See replication costs. 
-     * separate_criaTimeout->setPercentCostToDup("50");
-     */
+    separate_criaTimeout->setPctCostToDuplicate("50");
     components->insert(separate_criaTimeout);
     
     

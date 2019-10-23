@@ -16,6 +16,7 @@
 #include "Attribute.h"
 #include "Resource.h"
 #include "Signal.h"
+#include <iostream>
 
 Hold::Hold(Model* model): ModelComponent(model, Util::TypeOf<Hold>()) {
    
@@ -154,7 +155,11 @@ void Hold::release_signal(int signal, int recvLimit) {
     /* Releases the entities from the queue. */
     for (int i = 0; i < this->_queue->size(); ++i)
     {
-        waitingSignal = _model->parseExpression((_waitForValue));
+        Waiting* waiting = _queue->getAtRank(i);
+        //waitingSignal = _model->parseExpression((_waitForValue));
+        
+        waitingSignal = waiting->getEntity()->getAttributeValue("SigValue");
+        //std::cout << waitingSignal << std::endl;
         
         if (waitingSignal == signal)
         {
@@ -169,7 +174,7 @@ void Hold::release_signal(int signal, int recvLimit) {
             continue;
         }
         
-        if (_limit == 0)
+        if (limit == 0)
             break;
     }
 }
