@@ -13,8 +13,6 @@
 
 #include "TestRemove.h"
 
-// you have to included need libs
-
 // GEneSyS Simulator
 #include "Simulator.h"
 
@@ -61,9 +59,9 @@ int TestRemove::main(int argc, char** argv) {
      */
     ModelInfo* infos = model->getInfos();
     infos->setAnalystName("Joao Fellipe Uller");
-    infos->setNumberOfReplications(10);
-    infos->setReplicationLength(2);
-    infos->setReplicationLengthTimeUnit(Util::TimeUnit::hour);
+    infos->setNumberOfReplications(1);
+    infos->setReplicationLength(120);
+    infos->setReplicationLengthTimeUnit(Util::TimeUnit::minute);
     infos->setWarmUpPeriod(0);
     infos->setWarmUpPeriodTimeUnit(Util::TimeUnit::minute);
 
@@ -81,47 +79,53 @@ int TestRemove::main(int argc, char** argv) {
     
 
     Create* createCarro = new Create(model);
+    createCarro->setName("CreateCarro");
     createCarro->setEntityType(carro);
     createCarro->setTimeBetweenCreationsExpression("10");
     createCarro->setTimeUnit(Util::TimeUnit::minute);
     createCarro->setFirstCreation(0.0);
     components->insert(createCarro);
 
-    Queue* queueHold = new Queue(elements, "queue1");
+    Queue* queueHold = new Queue(elements, "QueueHold");
     queueHold->setOrderRule(Queue::OrderRule::FIFO);
     elements->insert(Util::TypeOf<Queue>(), queueHold);
     
     Hold* hold1 = new Hold(model);
+    hold1->setName("HoldCarro");
     hold1->setType(Hold::Type::InfiniteHold);
     hold1->setQueue(queueHold);
+    components->insert(hold1);
     
     Create* createComprador = new Create(model);
+    createComprador->setName("CreateComprador");
     createComprador->setEntityType(comprador);
-    createComprador->setTimeBetweenCreationsExpression("20");
+    createComprador->setTimeBetweenCreationsExpression("60");
     createComprador->setTimeUnit(Util::TimeUnit::minute);
-    createComprador->setFirstCreation(5.0);
+    createComprador->setFirstCreation(30.0);
     components->insert(createComprador);
     
     Dispose* disposeComprador = new Dispose(model);
+    disposeComprador->setName("DisposeComprador");
     components->insert(disposeComprador);
     
     Dispose* disposeCarro = new Dispose(model);
+    disposeCarro->setName("DisposeCarro");
     components->insert(disposeCarro);
     
-    Remove* remove1 = new Remove(model);
-    remove1->setQueueName("queue1");
-    remove1->setRank("1");
-    components->insert(remove1);
+    Remove* removeCarro = new Remove(model);
+    removeCarro->setName("RemoveCarro");
+    removeCarro->setQueueName("QueueHold");
+    removeCarro->setRank("NQ(QueueHold)");
+    components->insert(removeCarro);
     
     
     /* Connection 1. */
     createCarro->getNextComponents()->insert(hold1);
-    /* Necessidade de conectar saida hold em algum lugar. */
     
     /* Connection 2. */
-    createComprador->getNextComponents()->insert(remove1);
-    remove1->getNextComponents()->insert(disposeComprador);
-    remove1->getNextComponents()->insert(disposeCarro);
+    createComprador->getNextComponents()->insert(removeCarro);
+    removeCarro->getNextComponents()->insert(disposeComprador);
+    removeCarro->getNextComponents()->insert(disposeCarro);
     
     // insert the model into the simulator 
     simulator->getModelManager()->insert(model);

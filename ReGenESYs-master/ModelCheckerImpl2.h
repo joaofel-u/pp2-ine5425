@@ -5,37 +5,36 @@
  */
 
 /* 
- * File:   ModelCheckerDefaultImpl1.h
- * Author: rafael.luiz.cancian
+ * File:   ModelCheckerImpl2.h
+ * Author: joaofel-u
  *
- * Created on 8 de Agosto de 2018, 18:44
+ * Created on 23 de outubro de 2019, 08:11
  */
 
-#ifndef MODELCHECKERDEFAULTIMPL1_H
-#define MODELCHECKERDEFAULTIMPL1_H
+#ifndef MODELCHECKERIMPL2_H
+#define MODELCHECKERIMPL2_H
 
 #include "ModelChecker_if.h"
 #include "Model.h"
 #include "PluginManager.h"
 #include "List.h"
 
-class ModelCheckerDefaultImpl1 : public ModelChecker_if {
+class ModelCheckerImpl2 : public ModelChecker_if {
 public:
-    ModelCheckerDefaultImpl1(Model* model);
-    ModelCheckerDefaultImpl1(const ModelCheckerDefaultImpl1& orig);
-    virtual ~ModelCheckerDefaultImpl1();
+    ModelCheckerImpl2(Model* model);
+    ModelCheckerImpl2(const ModelCheckerImpl2& orig);
+    virtual ~ModelCheckerImpl2();
 public:
     virtual bool checkAll();
     virtual bool checkConnected();
     virtual bool checkSymbols();
     virtual bool checkActivationCode();
     virtual bool checkLimits();
-    //virtual bool verifySymbol(std::string componentName, std::string expressionName, std::string expression, std::string expressionResult, bool mandatory);
 private:
     bool _recursiveConnectedTo(PluginManager* pluginManager, ModelComponent* comp, List<ModelComponent*>* visited, List<ModelComponent*>* unconnected, bool* drenoFound);
 private:
     Model* _model;
 };
 
-#endif /* MODELCHECKERDEFAULTIMPL1_H */
+#endif /* MODELCHECKERIMPL2_H */
 

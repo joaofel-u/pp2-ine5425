@@ -40,6 +40,8 @@
         <itemPath>ParserDummyImpl.h</itemPath>
         <itemPath>PluginConnectorDummyImpl1.cpp</itemPath>
         <itemPath>PluginConnectorDummyImpl1.h</itemPath>
+        <itemPath>PluginConnectorDummyImpl2.cpp</itemPath>
+        <itemPath>PluginConnectorDummyImpl2.h</itemPath>
         <itemPath>SamplerDefaultImpl1.cpp</itemPath>
         <itemPath>SamplerDefaultImpl1.h</itemPath>
         <itemPath>SamplerDummyImpl.cpp</itemPath>
@@ -57,6 +59,8 @@
         <logicalFolder name="f1" displayName="Impl" projectFiles="true">
           <itemPath>ModelCheckerDefaultImpl1.cpp</itemPath>
           <itemPath>ModelCheckerDefaultImpl1.h</itemPath>
+          <itemPath>ModelCheckerImpl2.cpp</itemPath>
+          <itemPath>ModelCheckerImpl2.h</itemPath>
           <itemPath>ModelPersistenceDefaultImpl1.cpp</itemPath>
           <itemPath>ModelPersistenceDefaultImpl1.h</itemPath>
           <itemPath>SimulationReporterDefaultImpl1.cpp</itemPath>
@@ -349,6 +353,8 @@
                        projectFiles="true">
           <itemPath>TestEnterLeaveRoute.cpp</itemPath>
           <itemPath>TestEnterLeaveRoute.h</itemPath>
+          <itemPath>TestHoldSignal.cpp</itemPath>
+          <itemPath>TestHoldSignal.h</itemPath>
           <itemPath>TestODE.cpp</itemPath>
           <itemPath>TestODE.h</itemPath>
           <itemPath>TestParser.cpp</itemPath>
@@ -644,6 +650,10 @@
       </item>
       <item path="ModelCheckerDefaultImpl1.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="ModelCheckerImpl2.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ModelCheckerImpl2.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="ModelChecker_if.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ModelComponent.cpp" ex="false" tool="1" flavor2="0">
@@ -717,6 +727,10 @@
       <item path="PluginConnectorDummyImpl1.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PluginConnectorDummyImpl1.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PluginConnectorDummyImpl2.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PluginConnectorDummyImpl2.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="PluginConnector_if.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -891,6 +905,10 @@
       <item path="TestEnterLeaveRoute.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TestEnterLeaveRoute.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="TestHoldSignal.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TestHoldSignal.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="TestInputAnalyserTools.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1258,6 +1276,10 @@
       </item>
       <item path="ModelCheckerDefaultImpl1.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="ModelCheckerImpl2.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ModelCheckerImpl2.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="ModelChecker_if.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ModelComponent.cpp" ex="false" tool="1" flavor2="0">
@@ -1331,6 +1353,10 @@
       <item path="PluginConnectorDummyImpl1.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PluginConnectorDummyImpl1.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PluginConnectorDummyImpl2.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PluginConnectorDummyImpl2.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="PluginConnector_if.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1505,6 +1531,10 @@
       <item path="TestEnterLeaveRoute.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TestEnterLeaveRoute.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="TestHoldSignal.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TestHoldSignal.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="TestInputAnalyserTools.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -44,13 +44,6 @@ ModelComponent* Separate::LoadInstance(Model* model, std::map<std::string, std::
 }
 
 /*!
- *  Set the name of the separate to be created when spliting entities.
- */
-void Separate::setSeparateName(std::string value) {
-    this->_separateName = value;
-}
-
-/*!
  *    Set the type of the separate, whether it must split existing batch or
  *  duplicate the incoming entity
  */
@@ -64,6 +57,13 @@ void Separate::setSplitBatch(bool value) {
  */
 void Separate::setAmountToDuplicate(std::string value) {
     this->_amountToDup = value;
+}
+
+/*!
+ *  Set the duplication cost of the new entities when using it.
+ */
+void Separate::setPctCostToDuplicate(std::string value) {
+    this->_pctCostToDup = value;
 }
 
 /*!
@@ -106,7 +106,9 @@ void Separate::_execute(Entity* entity) {
     }
     _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, this->_amountToDup);
     _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, std::to_string(replicationsNumber));
-    if (this->_splitBatch) {
+    
+    if (this->_splitBatch)
+    {
       /* Split the existing Batch entity */
       traceManager->trace(Util::TraceLevel::blockInternal, "Split the existing Batch entity");
       Entity* batchEntity;
@@ -125,7 +127,9 @@ void Separate::_execute(Entity* entity) {
 
           this->_model->sendEntityToComponent(entity, this->getNextComponents()->frontConnection(), 0.0);
       }
-    } else {
+    } 
+    else 
+    {
       /* Duplicate the existing entity */
         traceManager->trace(Util::TraceLevel::blockInternal, "Duplicate the existing entity");
 
@@ -171,8 +175,9 @@ void Separate::_execute(Entity* entity) {
                 elementManager->insert(Util::TypeOf<Entity>(), duplicateEntity);
                 _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending a copied entity forward to the second connection");
                 _model->sendEntityToComponent(duplicateEntity, this->getNextComponents()->getConnectionAtRank(1), 0.0);
-            } else {
-                _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Not a batch");
+            } 
+            else 
+            {
                 duplicateEntity = new Entity(elementManager);
                 duplicateEntity->setEntityType(entity->getEntityType());
                 _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending a copied entity forward to the second connection");
@@ -201,7 +206,8 @@ std::map<std::string, std::string>* Separate::_saveInstance() {
 
 bool Separate::_check(std::string* errorMessage) {
     bool resultAll = true;
-    //...
+    resultAll &= _model->checkExpression(_amountToDup, "AmountToDuplicate", errorMessage);
+    resultAll &= _model->checkExpression(_pctCostToDup, "PctCostToDuplicate", errorMessage);
     return resultAll;
 }
 

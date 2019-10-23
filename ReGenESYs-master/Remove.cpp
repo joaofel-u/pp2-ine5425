@@ -74,17 +74,25 @@ void Remove::_execute(Entity* entity) {
 
     /* Gets the specified queue from its name. */
     Queue* queue = dynamic_cast<Queue*> (_model->getElementManager()->getElement(Util::TypeOf<Queue>(), queueName));
+    
     if (queue == nullptr)
+    {
         throw std::invalid_argument("Queue does not exist");
-	
+        return;
+    }
+
+    if (rankToRemove < 0 || rankToRemove >= queue->size())
+    {
+        throw std::invalid_argument("Invalid rank to be removed");
+        return;
+    }
+
     /* Get the element (entity) within the queue. */
     Waiting* element = queue->getAtRank(rankToRemove);
 
-    if(element != nullptr) {
-        queue->removeElement(element);
-        /* Removed element goes separated. */
-        this->_model->sendEntityToComponent(element->getEntity(), this->getNextComponents()->getAtRank(1), 0.0);
-    }
+    queue->removeElement(element);
+    /* Removed element goes separated. */
+    this->_model->sendEntityToComponent(element->getEntity(), this->getNextComponents()->getAtRank(1), 0.0);
 
     /* The original entity goes to the "normal" path. */
     this->_model->sendEntityToComponent(entity, this->getNextComponents()->getAtRank(0), 0.0);
@@ -112,8 +120,8 @@ std::map<std::string, std::string>* Remove::_saveInstance() {
 bool Remove::_check(std::string* errorMessage) {
     bool resultAll =  true;
     resultAll &= _model->checkExpression(_rank, "rank", errorMessage);
+    resultAll &= _queueName != "";
     return resultAll;
-
 }
 
 PluginInformation* Remove::GetPluginInformation(){
