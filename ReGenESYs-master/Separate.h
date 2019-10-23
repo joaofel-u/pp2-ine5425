@@ -38,14 +38,16 @@ protected:  // virtual
 public: // methods
     void setSplitBatch(bool value);
     void setAmountToDuplicate(std::string value);
+    void setPctCostToDuplicate(std::string value);
     void setTakeAllRepresentativeValues(bool value);
     void setAttributeType(bool value);
     
 private: // attributes 1:1
 private: // attributes 1:n
-    std::string _amountToDup;
-    bool _splitBatch; /* Separate::Type == SplitExistingBatch? */
-    bool _takeAllRepresentativeValues;
+    std::string _amountToDup = "1";
+    std::string _pctCostToDup = "50";
+    bool _splitBatch = false; /* Separate::Type == SplitExistingBatch? */
+    bool _takeAllRepresentativeValues = false;
     bool _attributeType = false;
 };
 

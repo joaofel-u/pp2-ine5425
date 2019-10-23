@@ -60,6 +60,13 @@ void Separate::setAmountToDuplicate(std::string value) {
 }
 
 /*!
+ *  Set the duplication cost of the new entities when using it.
+ */
+void Separate::setPctCostToDuplicate(std::string value) {
+    this->_pctCostToDup = value;
+}
+
+/*!
  *  Set how to assign the representative entity attribute values to the
  *  original entities
  */
@@ -171,7 +178,6 @@ void Separate::_execute(Entity* entity) {
             } 
             else 
             {
-                _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Not a batch");
                 duplicateEntity = new Entity(elementManager);
                 duplicateEntity->setEntityType(entity->getEntityType());
                 _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending a copied entity forward to the second connection");
@@ -200,7 +206,8 @@ std::map<std::string, std::string>* Separate::_saveInstance() {
 
 bool Separate::_check(std::string* errorMessage) {
     bool resultAll = true;
-    //...
+    resultAll &= _model->checkExpression(_amountToDup, "AmountToDuplicate", errorMessage);
+    resultAll &= _model->checkExpression(_pctCostToDup, "PctCostToDuplicate", errorMessage);
     return resultAll;
 }
 

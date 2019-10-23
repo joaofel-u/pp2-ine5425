@@ -60,9 +60,9 @@ int TestSeparate::main(int argc, char** argv) {
      */
     ModelInfo* infos = model->getInfos();
     infos->setAnalystName("Joao Fellipe Uller");
-    infos->setNumberOfReplications(10);
-    infos->setReplicationLength(2);
-    infos->setReplicationLengthTimeUnit(Util::TimeUnit::hour);
+    infos->setNumberOfReplications(1);
+    infos->setReplicationLength(120);
+    infos->setReplicationLengthTimeUnit(Util::TimeUnit::minute);
     infos->setWarmUpPeriod(0);
     infos->setWarmUpPeriodTimeUnit(Util::TimeUnit::minute);
     
@@ -78,29 +78,33 @@ int TestSeparate::main(int argc, char** argv) {
 
     // create a ModelComponent of type Create, used to insert entities into the model
     Create* create1 = new Create(model);
+    create1->setName("Create1");
     create1->setEntityType(entity1);
     create1->setTimeBetweenCreationsExpression("10");
     create1->setTimeUnit(Util::TimeUnit::minute);
-    create1->setFirstCreation(0.0);
+    create1->setFirstCreation(10.0);
     components->insert(create1); // insert the component into the model
     
     Separate* separate1 = new Separate(model);
+    separate1->setName("Separate1");
     separate1->setAmountToDuplicate("1");
-    //separate1->setType(Separate::Type::DuplicateOriginal);
-    //separate1->setCostToDuplicates(0.5);
+    separate1->setPctCostToDuplicate("50");
+    separate1->setSplitBatch(false);
     components->insert(separate1);
     
-    Queue* queue1 = new Queue(elements, "queue1");
+    Queue* queue1 = new Queue(elements, "Queue1");
     queue1->setOrderRule(Queue::OrderRule::FIFO);
     elements->insert(Util::TypeOf<Queue>(), queue1);
     
     Hold* hold1 = new Hold(model);
+    hold1->setName("Hold1");
     hold1->setType(Hold::Type::InfiniteHold);
     hold1->setQueue(queue1);
     components->insert(hold1);
     
     // create a (Sink)ModelComponent of type Dispose, used to remove entities from the model
     Dispose* dispose1 = new Dispose(model);  // insert the component into the model
+    dispose1->setName("Dispose1");
     components->insert(dispose1);
     
     /* Connect the components to compound the test model. */
