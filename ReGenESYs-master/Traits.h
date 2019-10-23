@@ -42,6 +42,7 @@
 #include "SlidingWindowModel.h"
 #include "TestRemove.h"
 #include "TestSeparate.h"
+#include "TestHoldSignal.h"
 
 //  Default implementations
 //statistics
@@ -54,9 +55,11 @@
 //simulator and parts
 #include "parserBisonFlex/ParserDefaultImpl2.h"
 #include "PluginConnectorDummyImpl1.h"
+#include "PluginConnectorDummyImpl2.h"
 //model and parts
 #include "SimulationReporterDefaultImpl1.h"
 #include "ModelCheckerDefaultImpl1.h"
+#include "ModelCheckerImpl2.h"
 #include "ModelPersistenceDefaultImpl1.h"
 //tools
 #include "ExperimentDesignDefaultImpl1.h"
@@ -79,9 +82,10 @@ template <> struct Traits<GenesysApplication_if> {
     //typedef SecondExampleOfSimulation Application;
     //typedef TestEnterLeaveRoute Application;
     
-    typedef SlidingWindowModel Application;
-    //typedef TestRemove Application;
+    //typedef SlidingWindowModel Application;
+    typedef TestRemove Application;
     //typedef TestSeparate Application;
+    //typedef TestHoldSignal Application;
 };
 
 
@@ -92,7 +96,8 @@ template <> struct Traits<GenesysApplication_if> {
 
 
 template <> struct Traits<PluginConnector_if> {
-    typedef PluginConnectorDummyImpl1 Implementation; 
+    //typedef PluginConnectorDummyImpl1 Implementation;
+    typedef PluginConnectorDummyImpl2 Implementation;
 };
 
 template <> struct Traits<Parser_if> {
@@ -124,7 +129,8 @@ template <> struct Traits<ModelComponent> {
 };
 
 template <> struct Traits<ModelChecker_if> {
-    typedef ModelCheckerDefaultImpl1 Implementation;
+    //typedef ModelCheckerDefaultImpl1 Implementation;
+    typedef ModelCheckerImpl2 Implementation;
 };
 
 /*
