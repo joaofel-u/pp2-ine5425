@@ -49,6 +49,14 @@ public:
     double getTimeStartedWaiting() const {
 	return _timeStartedWaiting;
     }
+    
+    double getWaitingForValue() const {
+        return _waitingForVal;
+    }
+    
+    void setWaitingForValue(double value) {
+        this->_waitingForVal = value;
+    }
 
     ModelComponent* getComponent() const {
 	return _component;
@@ -61,6 +69,7 @@ private:
     Entity* _entity;
     ModelComponent* _component;
     double _timeStartedWaiting;
+    double _waitingForVal = 0;
 };
 
 class Queue : public ModelElement {

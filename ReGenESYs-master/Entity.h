@@ -41,6 +41,7 @@ public:
     void setAttributeValue(std::string attributeName, double value);
     //void setAttributeValue(Util::identitifcation attributeID, double value);
     Util::identification getEntityNumber() const;
+    List<double>* getAttributesValues() const;
 protected:
     virtual bool _loadInstance(std::map<std::string, std::string>* fields);
     virtual std::map<std::string, std::string>* _saveInstance();

@@ -99,6 +99,10 @@ Util::identification Entity::getEntityNumber() const {
     return _entityNumber;
 }
 
+List<double>* Entity::getAttributesValues() const {
+    return this->_attributeValues;
+}
+
 bool Entity::_loadInstance(std::map<std::string, std::string>* fields) {
     // never lods an entity
     return true;
