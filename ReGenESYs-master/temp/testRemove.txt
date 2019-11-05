@@ -1,0 +1,30 @@
+# Genesys simulation model 
+# Last saved on Wed Oct 23 10:03:22 2019
+# simulator infos
+name=ReGenESyS - Reborn Generic and Expansible System Simulator; typename=SimulatorInfo; version=190909; 
+
+# model infos
+analystName=Joao Fellipe Uller; description=; name=Model 1; numberOfReplications=1; projectTitle=; replicationLength=120.000000; replicationLengthTimeUnit=6; terminatingCondition=; typename=ModelInfo; version=1.0; warmUpTime=0.000000; warmUpTimeTimeUnit=6; 
+
+# model elements
+attributeName=; id=5; name=QueueHold; orderRule=1; typename=Queue; 
+
+id=18; name=Entity.ArrivalTime; typename=Attribute; 
+
+id=1; initialNVACost=0.000000; initialOtherCost=0.000000; initialPicture=report; initialVACost=0.000000; initialWaitingCost=0.000000; name=carro; typename=EntityType; 
+
+id=2; initialNVACost=0.000000; initialOtherCost=0.000000; initialPicture=report; initialVACost=0.000000; initialWaitingCost=0.000000; name=comprador; typename=EntityType; 
+
+# model components
+condition=; id=8; limit=0; name=HoldCarro; nextSize=0; queueName=QueueHold; type=2; typename=Hold; waitForValue=1; 
+
+entitiesPerCreation=1; entityTypename=carro; firstCreation=0.000000; id=3; maxCreations=4294967295; name=CreateCarro; nextId0=8; nextSize=1; timeBetweenCreations=10; timeBetweenCreationsTimeUnit=6; typename=Create; 
+
+entitiesPerCreation=1; entityTypename=comprador; firstCreation=30.000000; id=9; maxCreations=4294967295; name=CreateComprador; nextId0=15; nextSize=1; timeBetweenCreations=60; timeBetweenCreationsTimeUnit=6; typename=Create; 
+
+id=11; name=DisposeComprador; nextSize=0; typename=Dispose; 
+
+id=13; name=DisposeCarro; nextSize=0; typename=Dispose; 
+
+id=15; name=RemoveCarro; nextId0=11; nextId1=13; nextSize=2; queueName=QueueHold; rank=NQ(QueueHold); typename=Remove; 
+

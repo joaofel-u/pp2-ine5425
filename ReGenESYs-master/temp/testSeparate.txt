@@ -1,0 +1,22 @@
+# Genesys simulation model 
+# Last saved on Tue Nov  5 19:09:29 2019
+# simulator infos
+name=ReGenESyS - Reborn Generic and Expansible System Simulator; typename=SimulatorInfo; version=190909; 
+
+# model infos
+analystName=Joao Fellipe Uller; description=; name=Model 1; numberOfReplications=1; projectTitle=; replicationLength=120.000000; replicationLengthTimeUnit=6; terminatingCondition=; typename=ModelInfo; version=1.0; warmUpTime=0.000000; warmUpTimeTimeUnit=6; 
+
+# model elements
+id=10; name=Entity.ArrivalTime; typename=Attribute; 
+
+id=1; initialNVACost=0.000000; initialOtherCost=0.000000; initialPicture=report; initialVACost=0.000000; initialWaitingCost=0.000000; name=entity1; typename=EntityType; 
+
+# model components
+entitiesPerCreation=1; entityTypename=entity1; firstCreation=10.000000; id=2; maxCreations=4294967295; name=Create1; nextId0=4; nextSize=1; timeBetweenCreations=10; timeBetweenCreationsTimeUnit=6; typename=Create; 
+
+id=4; name=Separate1; nextId0=7; nextId1=5; nextSize=2; typename=Separate; 
+
+id=5; name=Dispose2; nextSize=0; typename=Dispose; 
+
+id=7; name=Dispose1; nextSize=0; typename=Dispose; 
+

@@ -368,6 +368,8 @@
         </logicalFolder>
         <itemPath>FullSimulationOfComplexModel.cpp</itemPath>
         <itemPath>FullSimulationOfComplexModel.h</itemPath>
+        <itemPath>PartialTest.cpp</itemPath>
+        <itemPath>PartialTest.h</itemPath>
         <itemPath>SlidingWindowModel.cpp</itemPath>
         <itemPath>SlidingWindowModel.h</itemPath>
       </logicalFolder>
@@ -711,6 +713,10 @@
       <item path="ParserManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Parser_if.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PartialTest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PartialTest.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="PickStation.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1337,6 +1343,10 @@
       <item path="ParserManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Parser_if.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PartialTest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PartialTest.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="PickStation.cpp" ex="false" tool="1" flavor2="0">
       </item>

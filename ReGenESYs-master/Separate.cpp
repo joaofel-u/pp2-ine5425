@@ -136,7 +136,22 @@ void Separate::_execute(Entity* entity) {
         Entity* duplicateEntity;
         double pctCostToDup = _model->parseExpression(this->_pctCostToDup);
         
-        /* @todo Alter original entity */
+        /* Throw exception. */
+        if (pctCostToDup < 0 || pctCostToDup > 100)
+        {
+            throw std::invalid_argument("Invalid percentage.");
+            return;
+        }
+        
+        pctCostToDup /= 100;
+        
+        /* Multiplies original entity attributes by (1 - pct). */
+        List<double>* attribs = entity->getAttributesValues();
+        for (int i = 0; i < attribs->size(); ++i)
+        {
+            double value = attribs->getAtRank(i) * (1-pctCostToDup);
+            attribs->setAtRank(i, value);
+        }
 
         _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending the original entity forward to the first connection");
         this->_model->sendEntityToComponent(entity, this->getNextComponents()->frontConnection(), 0.0);
@@ -184,7 +199,13 @@ void Separate::_execute(Entity* entity) {
                 duplicateEntity = new Entity(elementManager);
                 duplicateEntity->setEntityType(entity->getEntityType());
                 
-                /* @todo Alter the entity values. */
+                /* Multiplies duplicated entity attributes by pctCostToDup. */
+                List<double>* attribs = duplicateEntity->getAttributesValues();
+                for (int i = 0; i < attribs->size(); ++i)
+                {
+                    double value = attribs->getAtRank(i) * pctCostToDup / replicationsNumber;
+                    attribs->setAtRank(i, value);
+                }
                 
                 _model->getTraceManager()->trace(Util::TraceLevel::blockInternal, "Sending a copied entity forward to the second connection");
                 _model->sendEntityToComponent(duplicateEntity, this->getNextComponents()->getConnectionAtRank(1), 0.0);

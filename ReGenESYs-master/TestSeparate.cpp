@@ -92,15 +92,9 @@ int TestSeparate::main(int argc, char** argv) {
     separate1->setSplitBatch(false);
     components->insert(separate1);
     
-    Queue* queue1 = new Queue(elements, "Queue1");
-    queue1->setOrderRule(Queue::OrderRule::FIFO);
-    elements->insert(Util::TypeOf<Queue>(), queue1);
-    
-    Hold* hold1 = new Hold(model);
-    hold1->setName("Hold1");
-    hold1->setType(Hold::Type::InfiniteHold);
-    hold1->setQueue(queue1);
-    components->insert(hold1);
+    Dispose* dispose2 = new Dispose(model);  // insert the component into the model
+    dispose2->setName("Dispose2");
+    components->insert(dispose2);
     
     // create a (Sink)ModelComponent of type Dispose, used to remove entities from the model
     Dispose* dispose1 = new Dispose(model);  // insert the component into the model
@@ -109,8 +103,8 @@ int TestSeparate::main(int argc, char** argv) {
     
     /* Connect the components to compound the test model. */
     create1->getNextComponents()->insert(separate1);
-    separate1->getNextComponents()->insert(hold1);
     separate1->getNextComponents()->insert(dispose1);
+    separate1->getNextComponents()->insert(dispose2);
     /* Necessidade de ligar saida Hold em algum lugar. */
     
     

@@ -1,0 +1,40 @@
+# Genesys simulation model 
+# Last saved on Tue Nov  5 16:35:44 2019
+# simulator infos
+name=ReGenESyS - Reborn Generic and Expansible System Simulator; typename=SimulatorInfo; version=190909; 
+
+# model infos
+analystName=Joao Fellipe Uller; description=; name=Model 1; numberOfReplications=1; projectTitle=; replicationLength=42.000000; replicationLengthTimeUnit=6; terminatingCondition=; typename=ModelInfo; version=1.0; warmUpTime=0.000000; warmUpTimeTimeUnit=6; 
+
+# model elements
+attributeName=; id=9; name=Queue1; orderRule=1; typename=Queue; 
+
+id=1; initialNVACost=0.000000; initialOtherCost=0.000000; initialPicture=report; initialVACost=0.000000; initialWaitingCost=0.000000; name=pacote; typename=EntityType; 
+
+id=23; name=Entity.ArrivalTime; typename=Attribute; 
+
+id=2; initialNVACost=0.000000; initialOtherCost=0.000000; initialPicture=report; initialVACost=0.000000; initialWaitingCost=0.000000; name=ack; typename=EntityType; 
+
+id=3; name=PacotesEnviados; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=0.000000; 
+
+id=4; name=AcksEnviados; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=0.000000; 
+
+id=5; name=SigValue; typename=Attribute; 
+
+# model components
+assignments=2; destination0=AcksEnviados; destinationType0=1; expression0=AcksEnviados + 1; id=17; name=AssignAck; nextId0=18; nextSize=1; typename=Assign; 
+
+assignments=2; destination0=PacotesEnviados; destinationType0=1; expression0=PacotesEnviados + 1; id=8; name=AssignPacote; nextId0=12; nextSize=1; typename=Assign; 
+
+condition=; id=12; limit=0; name=HoldPacote; nextId0=13; nextSize=1; queueName=Queue1; type=0; typename=Hold; waitForValue=SigValue; 
+
+entitiesPerCreation=1; entityTypename=ack; firstCreation=30.000000; id=15; maxCreations=4294967295; name=CreateAck; nextId0=17; nextSize=1; timeBetweenCreations=3; timeBetweenCreationsTimeUnit=6; typename=Create; 
+
+entitiesPerCreation=1; entityTypename=pacote; firstCreation=0.000000; id=6; maxCreations=4294967295; name=CreatePacote; nextId0=8; nextSize=1; timeBetweenCreations=5; timeBetweenCreationsTimeUnit=6; typename=Create; 
+
+id=13; name=DisposePacote; nextSize=0; typename=Dispose; 
+
+id=18; name=SignalAck; nextId0=19; nextSize=1; typename=Signal; 
+
+id=19; name=DisposeAck; nextSize=0; typename=Dispose; 
+

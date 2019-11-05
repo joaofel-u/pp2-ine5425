@@ -19,6 +19,8 @@
 #include "Queue.h"
 #include <string>
 
+#include <iostream>
+
 Remove::Remove(Model* model) : ModelComponent(model, Util::TypeOf<Remove>()) {
 }
 
@@ -74,7 +76,7 @@ void Remove::_execute(Entity* entity) {
 
     /* Gets the specified queue from its name. */
     Queue* queue = dynamic_cast<Queue*> (_model->getElementManager()->getElement(Util::TypeOf<Queue>(), queueName));
-    
+
     if (queue == nullptr)
     {
         throw std::invalid_argument("Queue does not exist");
@@ -86,16 +88,17 @@ void Remove::_execute(Entity* entity) {
         throw std::invalid_argument("Invalid rank to be removed");
         return;
     }
-
+    
     /* Get the element (entity) within the queue. */
     Waiting* element = queue->getAtRank(rankToRemove);
-
+    
     queue->removeElement(element);
-    /* Removed element goes separated. */
-    this->_model->sendEntityToComponent(element->getEntity(), this->getNextComponents()->getAtRank(1), 0.0);
-
+    
     /* The original entity goes to the "normal" path. */
     this->_model->sendEntityToComponent(entity, this->getNextComponents()->getAtRank(0), 0.0);
+    
+    /* Removed element goes separated. */
+    this->_model->sendEntityToComponent(element->getEntity(), this->getNextComponents()->getAtRank(1), 0.0);
 }
 
 bool Remove::_loadInstance(std::map<std::string, std::string>* fields) {

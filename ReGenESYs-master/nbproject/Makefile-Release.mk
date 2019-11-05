@@ -101,6 +101,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/ParserDefaultImpl1.o \
 	${OBJECTDIR}/ParserDummyImpl.o \
 	${OBJECTDIR}/ParserManager.o \
+	${OBJECTDIR}/PartialTest.o \
 	${OBJECTDIR}/PickStation.o \
 	${OBJECTDIR}/PickUp.o \
 	${OBJECTDIR}/Plugin.o \
@@ -522,6 +523,11 @@ ${OBJECTDIR}/ParserManager.o: ParserManager.cpp nbproject/Makefile-${CND_CONF}.m
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ParserManager.o ParserManager.cpp
+
+${OBJECTDIR}/PartialTest.o: PartialTest.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PartialTest.o PartialTest.cpp
 
 ${OBJECTDIR}/PickStation.o: PickStation.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}

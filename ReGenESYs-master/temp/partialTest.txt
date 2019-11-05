@@ -1,0 +1,56 @@
+# Genesys simulation model 
+# Last saved on Tue Nov  5 18:23:12 2019
+# simulator infos
+name=ReGenESyS - Reborn Generic and Expansible System Simulator; typename=SimulatorInfo; version=190909; 
+
+# model infos
+analystName=Joao Fellipe Uller; description=; name=Model 1; numberOfReplications=1; projectTitle=; replicationLength=42.000000; replicationLengthTimeUnit=6; terminatingCondition=; typename=ModelInfo; version=1.0; warmUpTime=0.000000; warmUpTimeTimeUnit=6; 
+
+# model elements
+attributeName=; id=26; name=FilaJanela; orderRule=1; typename=Queue; 
+
+capacity=5; costBusyHour=1.000000; costIdleHour=1.000000; costPerUse=1.000000; id=22; name=JanelaDeslizante; typename=Resource; 
+
+id=12; name=NovoPacote; typename=Station; 
+
+id=1; initialNVACost=0.000000; initialOtherCost=0.000000; initialPicture=report; initialVACost=0.000000; initialWaitingCost=0.000000; name=Pacote; typename=EntityType; 
+
+id=2; name=NumeroPacote; typename=Attribute; 
+
+id=30; name=Entity.ArrivalTime; typename=Attribute; 
+
+id=31; name=Entity.TransferTime; typename=Attribute; 
+
+id=32; name=Entity.Station; typename=Attribute; 
+
+id=34; name=Entity.ArrivalAtNovoPacote; typename=Attribute; 
+
+id=3; name=TamanhoPacote; typename=Attribute; 
+
+id=4; name=DelayCanal; typename=Attribute; 
+
+id=5; name=DelayTransmissao; typename=Attribute; 
+
+id=6; name=TaxaDeTransmissao; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=100.000000; 
+
+id=7; name=PacotesEnviados; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=0.000000; 
+
+# model components
+allocationType=0; id=19; name=EntraNaJanela; nextId0=20; nextSize=1; priority==2; quantity=1.0; queueId=26; queueName=FilaJanela; resourceId=22; resourceName=JanelaDeslizante; resourceType=2; rule=4; saveAttribute=; typename=Seize; 
+
+assignments=0; id=17; name=AtribuiTamanho; nextId0=18; nextSize=1; typename=Assign; 
+
+assignments=0; id=18; name=AtribuiDelays; nextId0=19; nextSize=1; typename=Assign; 
+
+assignments=5; destination0=NumeroPacote; destinationType0=0; expression0=PacotesEnviados + 1; id=16; name=AtribuiNumero; nextId0=17; nextSize=1; typename=Assign; 
+
+entitiesPerCreation=1; entityTypename=Pacote; firstCreation=0.000000; id=8; maxCreations=MR(JanelaDeslizante); name=Pacotes; nextId0=10; nextSize=1; timeBetweenCreations=1; timeBetweenCreationsTimeUnit=5; typename=Create; 
+
+id=10; name=GoToNovoPacote; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=12; stationName=NovoPacote; typename=Route; 
+
+id=11; name=EnterNovoPacote; nextId0=15; nextSize=1; stationName=NovoPacote; typename=Enter; 
+
+id=15; name=LeaveNovoPacote; nextId0=16; nextSize=1; stationName=NovoPacote; typename=Leave; 
+
+id=20; name=GoToEnvioTransmissor; nextSize=0; typename=Dispose; 
+

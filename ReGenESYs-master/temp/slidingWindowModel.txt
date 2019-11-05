@@ -1,0 +1,236 @@
+# Genesys simulation model 
+# Last saved on Tue Nov  5 17:25:25 2019
+# simulator infos
+name=ReGenESyS - Reborn Generic and Expansible System Simulator; typename=SimulatorInfo; version=190909; 
+
+# model infos
+analystName=Joao Fellipe Uller; description=; name=Model 1; numberOfReplications=1; projectTitle=; replicationLength=10000.000000; replicationLengthTimeUnit=5; terminatingCondition=; typename=ModelInfo; version=1.0; warmUpTime=1000.000000; warmUpTimeTimeUnit=5; 
+
+# model elements
+attributeName=; id=121; name=FilaJanela; orderRule=1; typename=Queue; 
+
+attributeName=; id=128; name=FilaTransmissaoPacote; orderRule=1; typename=Queue; 
+
+attributeName=; id=131; name=FilaAck; orderRule=1; typename=Queue; 
+
+attributeName=; id=138; name=FilaAlocaRotaPacote; orderRule=1; typename=Queue; 
+
+attributeName=; id=145; name=FilaAlocaRotaAck; orderRule=1; typename=Queue; 
+
+attributeName=; id=152; name=FilaTransmissaoAck; orderRule=1; typename=Queue; 
+
+capacity=1; costBusyHour=1.000000; costIdleHour=1.000000; costPerUse=1.000000; id=124; name=CanalDeTransmissaoPacote; typename=Resource; 
+
+capacity=1; costBusyHour=1.000000; costIdleHour=1.000000; costPerUse=1.000000; id=134; name=RotaPacote; typename=Resource; 
+
+capacity=1; costBusyHour=1.000000; costIdleHour=1.000000; costPerUse=1.000000; id=141; name=RotaAck; typename=Resource; 
+
+capacity=1; costBusyHour=1.000000; costIdleHour=1.000000; costPerUse=1.000000; id=148; name=CanalDeTransmissaoAck; typename=Resource; 
+
+capacity=5; costBusyHour=1.000000; costIdleHour=1.000000; costPerUse=1.000000; id=117; name=JanelaDeslizante; typename=Resource; 
+
+id=108; name=NumeroPacote; typename=Attribute; 
+
+id=109; name=TamanhoPacote; typename=Attribute; 
+
+id=110; name=DelayCanal; typename=Attribute; 
+
+id=111; name=DelayTransmissao; typename=Attribute; 
+
+id=112; name=TempoMaximoAck; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=75.000000; 
+
+id=113; name=TaxaErro; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=0.010000; 
+
+id=114; name=TaxaDeTransmissao; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=100.000000; 
+
+id=115; name=TamanhoPacoteAck; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=128.000000; 
+
+id=116; name=PacotesEnviados; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=0.000000; 
+
+id=161; name=Entity.ArrivalTime; typename=Attribute; 
+
+id=162; name=Entity.TransferTime; typename=Attribute; 
+
+id=163; name=Entity.Station; typename=Attribute; 
+
+id=165; name=Entity.WaitTime; typename=Attribute; 
+
+id=166; name=Entity.ArrivalAtNovoPacote; typename=Attribute; 
+
+id=168; name=Entity.ArrivalAtEnvioTransmissor; typename=Attribute; 
+
+id=169; name=Entity.ArrivalAtOutTransmissor; typename=Attribute; 
+
+id=16; name=EnvioTransmissor; typename=Station; 
+
+id=170; name=Entity.ArrivalAtOutReceptor; typename=Attribute; 
+
+id=171; name=Entity.ArrivalAtInReceptor; typename=Attribute; 
+
+id=172; name=Entity.ArrivalAtEnvioReceptor; typename=Attribute; 
+
+id=173; name=Entity.ArrivalAtAguardeAck; typename=Attribute; 
+
+id=174; name=Entity.ArrivalAtInTransmissor; typename=Attribute; 
+
+id=175; name=Entity.ArrivalAtCountTimeout; typename=Attribute; 
+
+id=1; initialNVACost=0.000000; initialOtherCost=0.000000; initialPicture=report; initialVACost=0.000000; initialWaitingCost=0.000000; name=Pacote; typename=EntityType; 
+
+id=29; name=OutTransmissor; typename=Station; 
+
+id=41; name=OutReceptor; typename=Station; 
+
+id=53; name=InReceptor; typename=Station; 
+
+id=61; name=EnvioReceptor; typename=Station; 
+
+id=6; name=NovoPacote; typename=Station; 
+
+id=70; name=AguardeAck; typename=Station; 
+
+id=82; name=InTransmissor; typename=Station; 
+
+id=94; name=CountTimeout; typename=Station; 
+
+# model components
+allocationType=0; id=13; name=EntraNaJanela; nextId0=14; nextSize=1; priority==2; quantity=1.0; queueId=121; queueName=FilaJanela; resourceId=117; resourceName=JanelaDeslizante; resourceType=2; rule=4; saveAttribute=; typename=Seize; 
+
+allocationType=0; id=22; name=AlocaCanal; nextId0=23; nextSize=1; priority==2; quantity=1.0; queueId=128; queueName=FilaTransmissaoPacote; resourceId=124; resourceName=CanalDeTransmissaoPacote; resourceType=2; rule=4; saveAttribute=; typename=Seize; 
+
+allocationType=0; id=33; name=AlocaRotaPacote; nextId0=34; nextSize=1; priority==2; quantity=1.0; queueId=138; queueName=FilaAlocaRotaPacote; resourceId=134; resourceName=RotaPacote; resourceType=2; rule=4; saveAttribute=; typename=Seize; 
+
+allocationType=0; id=45; name=AlocaRotaAck; nextId0=46; nextSize=1; priority==2; quantity=1.0; queueId=145; queueName=FilaAlocaRotaAck; resourceId=141; resourceName=RotaAck; resourceType=2; rule=4; saveAttribute=; typename=Seize; 
+
+allocationType=0; id=65; name=AlocaCanalAck; nextId0=66; nextSize=1; priority==2; quantity=1.0; queueId=152; queueName=FilaTransmissaoAck; resourceId=148; resourceName=CanalDeTransmissaoAck; resourceType=2; rule=4; saveAttribute=; typename=Seize; 
+
+assignments=0; id=11; name=AtribuiTamanho; nextId0=12; nextSize=1; typename=Assign; 
+
+assignments=0; id=12; name=AtribuiDelays; nextId0=13; nextSize=1; typename=Assign; 
+
+assignments=0; id=57; name=ConverteAck; nextId0=58; nextSize=1; typename=Assign; 
+
+assignments=2; destination0=DelayCanal; destinationType0=0; expression0=UNIF(1,50); id=58; name=AtribuiDelaysAck; nextId0=59; nextSize=1; typename=Assign; 
+
+assignments=6; destination0=NumeroPacote; destinationType0=0; expression0=PacotesEnviados + 1; id=10; name=AtribuiNumero; nextId0=11; nextSize=1; typename=Assign; 
+
+condition0=NQ(FilaAck) > 0; conditions=1; id=103; name=RemoveFilaInteira; nextId0=104; nextId1=100; nextSize=2; typename=Decide; 
+
+condition0=NQ(FilaAck) > 0; conditions=1; id=86; name=VerificaFilaAck; nextId0=89; nextId1=87; nextSize=2; typename=Decide; 
+
+condition0=NQ(FilaAck) > 0; conditions=1; id=99; name=VerificaFilaAckTimeout; nextId0=102; nextId1=100; nextSize=2; typename=Decide; 
+
+condition0=NumeroPacote == AQUE(FilaAck,1,NumeroPacote); conditions=1; id=102; name=VerificaTimeout; nextId0=103; nextId1=100; nextSize=2; typename=Decide; 
+
+condition0=NumeroPacote == AQUE(FilaAck,1,NumeroPacote); conditions=1; id=89; name=VerificaAck; nextId0=90; nextId1=87; nextSize=2; typename=Decide; 
+
+condition0=UNIF(0,1) <= (100 - TaxaErro); conditions=1; id=36; name=DecideErroPacote; nextId0=37; nextId1=38; nextSize=2; typename=Decide; 
+
+condition0=UNIF(0,1) <= (100 - TaxaErro); conditions=1; id=48; name=DecideErroAck; nextId0=49; nextId1=50; nextSize=2; typename=Decide; 
+
+condition=; id=74; limit=0; name=HoldAck; nextId0=75; nextSize=1; queueName=FilaAck; type=0; typename=Hold; waitForValue=NumeroPacote; 
+
+delayExpression=DelayCanal; delayExpressionTimeUnit=5; id=34; name=LatenciaCanal; nextId0=35; nextSize=1; typename=Delay; 
+
+delayExpression=DelayCanal; delayExpressionTimeUnit=5; id=46; name=LatenciaCanalAck; nextId0=47; nextSize=1; typename=Delay; 
+
+delayExpression=DelayTransmissao; delayExpressionTimeUnit=5; id=23; name=AtrasoDeTransmissao; nextId0=24; nextSize=1; typename=Delay; 
+
+delayExpression=DelayTransmissao; delayExpressionTimeUnit=5; id=66; name=AtrasoDeTransmissaoAck; nextId0=67; nextSize=1; typename=Delay; 
+
+delayExpression=TempoMaximoAck; delayExpressionTimeUnit=5; id=98; name=TimeoutAck; nextId0=99; nextSize=1; typename=Delay; 
+
+entitiesPerCreation=1; entityTypename=Pacote; firstCreation=0.000000; id=2; maxCreations=MR(JanelaDeslizante); name=Pacotes; nextId0=4; nextSize=1; timeBetweenCreations=1; timeBetweenCreationsTimeUnit=5; typename=Create; 
+
+expression0=1; expressionName0=Pacotes Reenviados; fileName0=./temp/PacotesReenviados.txt; id=105; name=ContaReenviados; nextId0=107; nextSize=1; typename=Record; 
+
+expression0=; expressionName0=; fileName0=; id=76; name=ContaEnviadosComSucesso; nextId0=78; nextSize=1; typename=Record; 
+
+expression0=TamanhoPacote; expressionName0=Bytes Enviados; fileName0=./temp/BytesEnviados.txt; id=78; name=ContaBytesEnviados; nextId0=80; nextSize=1; typename=Record; 
+
+id=100; name=DescartaTimeout; nextSize=0; typename=Dispose; 
+
+id=104; name=RemoveDaFila; nextId0=103; nextId1=105; nextSize=2; queueName=FilaAck; rank=1; typename=Remove; 
+
+id=107; name=ReenviaPacote; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=16; stationName=EnvioTransmissor; typename=Route; 
+
+id=14; name=GoToEnvioTransmissor; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=16; stationName=EnvioTransmissor; typename=Route; 
+
+id=15; name=EnterEnvioTransmissor; nextId0=19; nextSize=1; stationName=EnvioTransmissor; typename=Enter; 
+
+id=19; name=LeaveEnvioTransmissor; nextId0=20; nextSize=1; stationName=EnvioTransmissor; typename=Leave; 
+
+id=20; name=CriaEsperaAck; nextId0=22; nextId1=21; nextSize=2; typename=Separate; 
+
+id=21; name=GoToAguardeAck; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=70; stationName=AguardeAck; typename=Route; 
+
+id=24; name=LivraCanal; nextId0=25; nextSize=1; priority=0; quantity=1; resourceId=124; resourceName=CanalDeTransmissaoPacote; resourceType=2; rule=4; saveAttribute=; typename=Release; 
+
+id=25; name=CriaTimeout; nextId0=27; nextId1=26; nextSize=2; typename=Separate; 
+
+id=26; name=GoToCountTimeout; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=94; stationName=CountTimeout; typename=Route; 
+
+id=27; name=GoToOutTransmissor; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=29; stationName=OutTransmissor; typename=Route; 
+
+id=28; name=EnterOutTransmissor; nextId0=32; nextSize=1; stationName=OutTransmissor; typename=Enter; 
+
+id=32; name=LeaveOutTransmissor; nextId0=33; nextSize=1; stationName=OutTransmissor; typename=Leave; 
+
+id=35; name=LivraRotaPacote; nextId0=36; nextSize=1; priority=0; quantity=1; resourceId=134; resourceName=RotaPacote; resourceType=2; rule=4; saveAttribute=; typename=Release; 
+
+id=37; name=GoToInReceptor; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=53; stationName=InReceptor; typename=Route; 
+
+id=38; name=ErroPacote; nextSize=0; typename=Dispose; 
+
+id=40; name=EnterOutReceptor; nextId0=44; nextSize=1; stationName=OutReceptor; typename=Enter; 
+
+id=44; name=LeaveOutReceptor; nextId0=45; nextSize=1; stationName=OutReceptor; typename=Leave; 
+
+id=47; name=LivraRotaAck; nextId0=48; nextSize=1; priority=0; quantity=1; resourceId=141; resourceName=RotaAck; resourceType=2; rule=4; saveAttribute=; typename=Release; 
+
+id=49; name=GoToInTransmissor; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=82; stationName=InTransmissor; typename=Route; 
+
+id=4; name=GoToNovoPacote; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=6; stationName=NovoPacote; typename=Route; 
+
+id=50; name=ErroAck; nextSize=0; typename=Dispose; 
+
+id=52; name=EnterInReceptor; nextId0=56; nextSize=1; stationName=InReceptor; typename=Enter; 
+
+id=56; name=LeaveInReceptor; nextId0=57; nextSize=1; stationName=InReceptor; typename=Leave; 
+
+id=59; name=GoToEnvioReceptor; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=61; stationName=EnvioReceptor; typename=Route; 
+
+id=5; name=EnterNovoPacote; nextId0=9; nextSize=1; stationName=NovoPacote; typename=Enter; 
+
+id=60; name=EnterEnvioReceptor; nextId0=64; nextSize=1; stationName=EnvioReceptor; typename=Enter; 
+
+id=64; name=LeaveEnvioReceptor; nextId0=65; nextSize=1; stationName=EnvioReceptor; typename=Leave; 
+
+id=67; name=LivraCanalAck; nextId0=68; nextSize=1; priority=0; quantity=1; resourceId=148; resourceName=CanalDeTransmissaoAck; resourceType=2; rule=4; saveAttribute=; typename=Release; 
+
+id=68; name=GoToOutReceptor; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=41; stationName=OutReceptor; typename=Route; 
+
+id=69; name=EnterAguardeAck; nextId0=73; nextSize=1; stationName=AguardeAck; typename=Enter; 
+
+id=73; name=LeaveAguardeAck; nextId0=74; nextSize=1; stationName=AguardeAck; typename=Leave; 
+
+id=75; name=LivraJanela; nextId0=76; nextSize=1; priority=0; quantity=1; resourceId=117; resourceName=JanelaDeslizante; resourceType=2; rule=4; saveAttribute=; typename=Release; 
+
+id=80; name=ReciclaPacotes; nextSize=0; routeDestinationType=0; routeTimeExpression=0; routeTimeTimeUnit=5; stationId=6; stationName=NovoPacote; typename=Route; 
+
+id=81; name=EnterInTransmissor; nextId0=85; nextSize=1; stationName=InTransmissor; typename=Enter; 
+
+id=85; name=LeaveInTransmissor; nextId0=86; nextSize=1; stationName=InTransmissor; typename=Leave; 
+
+id=87; name=IgnoraAck; nextSize=0; typename=Dispose; 
+
+id=90; name=RetiraDaFilaAck; nextId0=91; nextSize=1; typename=Signal; 
+
+id=91; name=DescartaAck; nextSize=0; typename=Dispose; 
+
+id=93; name=EnterCountTimeout; nextId0=97; nextSize=1; stationName=CountTimeout; typename=Enter; 
+
+id=97; name=LeaveCountTimeout; nextId0=98; nextSize=1; stationName=CountTimeout; typename=Leave; 
+
+id=9; name=LeaveNovoPacote; nextId0=10; nextSize=1; stationName=NovoPacote; typename=Leave; 
+

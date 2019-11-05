@@ -15,10 +15,7 @@ Signal::Signal(const Signal& orig): ModelComponent(orig) {
 
 
 Signal::~Signal() {
-}
-template<typename Base, typename T>
-inline bool instanceof(const T*) {
-   return std::is_base_of<Base, T>::value;
+    delete this->_signalListeners;
 }
 
 void Signal::_execute(Entity* entity) {
@@ -35,7 +32,7 @@ std::string Signal::show() {
     return ModelComponent::show() + "";
 }
 PluginInformation* Signal::GetPluginInformation() {
-    return new PluginInformation(Util::TypeOf<Signal>(), &Hold::LoadInstance);
+    return new PluginInformation(Util::TypeOf<Signal>(), &Signal::LoadInstance);
 }
 
 void Signal::_initBetweenReplications() {

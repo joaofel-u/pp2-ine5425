@@ -72,17 +72,21 @@ int SlidingWindowModel::main(int argc, char** argv) {
     /* Build the simulation model. */
     //simulator->getTraceManager()->setTraceLevel(Util::TraceLevel::simulation);
     simulator->getTraceManager()->setTraceLevel(Util::TraceLevel::blockArrival);
+
     
     /*
      * @brief Defines the replication params.
      */
     ModelInfo* infos = model->getInfos();
     infos->setAnalystName("Joao Fellipe Uller");
-    infos->setNumberOfReplications(10);
-    infos->setReplicationLength(1000000);
-    infos->setReplicationLengthTimeUnit(Util::TimeUnit::minute);
-    infos->setWarmUpPeriod(100000);
-    infos->setWarmUpPeriodTimeUnit(Util::TimeUnit::minute);
+    //infos->setNumberOfReplications(10);
+    infos->setNumberOfReplications(1);
+    //infos->setReplicationLength(1000000);
+    infos->setReplicationLength(10000);
+    infos->setReplicationLengthTimeUnit(Util::TimeUnit::second);
+    //infos->setWarmUpPeriod(100000);
+    infos->setWarmUpPeriod(1000);
+    infos->setWarmUpPeriodTimeUnit(Util::TimeUnit::second);
 
     
     /*
@@ -171,6 +175,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     Hold* hold_holdAck = new Hold(model);
     Release* release_livraJanela = new Release(model);
     Record* record_contaEnviadosComSucesso = new Record(model);
+    Record* record_contaBytesEnviados = new Record(model);
     Route* route_reciclaPacotes = new Route(model);
     
     Enter* enter_inTransmissor = new Enter(model);
@@ -230,13 +235,13 @@ int SlidingWindowModel::main(int argc, char** argv) {
     variable_pacotesEnviados->setValue(0);
     elements->insert(Util::TypeOf<Variable>(), variable_pacotesEnviados);
     
-    Counter* counter_pacotesReenviados = new Counter(elements);
-    counter_pacotesReenviados->setName("PacotesReenviados");
-    elements->insert(Util::TypeOf<Counter>(), counter_pacotesReenviados);
-    
-    Counter* counter_pacotesEnviadosComSucesso = new Counter(elements);
-    counter_pacotesEnviadosComSucesso->setName("PacotesEnviadosComSucesso");
-    elements->insert(Util::TypeOf<Counter>(), counter_pacotesEnviadosComSucesso);
+//    Counter* counter_pacotesReenviados = new Counter(elements);
+//    counter_pacotesReenviados->setName("PacotesReenviados");
+//    elements->insert(Util::TypeOf<Counter>(), counter_pacotesReenviados);
+//    
+//    Counter* counter_pacotesEnviadosComSucesso = new Counter(elements);
+//    counter_pacotesEnviadosComSucesso->setName("PacotesEnviadosComSucesso");
+//    elements->insert(Util::TypeOf<Counter>(), counter_pacotesEnviadosComSucesso);
     
     
     /* Instantiates all stations that will be used on the model. */
@@ -484,13 +489,21 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(release_livraJanela);
     
     
-    /* 
-     * Record 'ContaEnviadosComSucesso'. 
-     * 
-     * @todo Define correct parameters.
+    /* Assign 'ContaEnviadosComSucesso'. 
+     * @todo Define as a counter.
      */
     record_contaEnviadosComSucesso->setName("ContaEnviadosComSucesso");
+    record_contaBytesEnviados->setExpressionName("Pacotes Enviados Com Sucesso");
+    record_contaBytesEnviados->setExpression("1");
+    record_contaBytesEnviados->setFilename("./temp/PacotesEnviados.txt");
     components->insert(record_contaEnviadosComSucesso);
+    
+    /* Record 'ContaBytesEnviados'. */
+    record_contaBytesEnviados->setName("ContaBytesEnviados");
+    record_contaBytesEnviados->setExpressionName("Bytes Enviados");
+    record_contaBytesEnviados->setExpression("TamanhoPacote");
+    record_contaBytesEnviados->setFilename("./temp/BytesEnviados.txt");
+    components->insert(record_contaBytesEnviados);
     
     
     /* Route 'ReciclaPacotes'. */
@@ -506,7 +519,8 @@ int SlidingWindowModel::main(int argc, char** argv) {
     leave_aguardeAck->getNextComponents()->insert(hold_holdAck);
     hold_holdAck->getNextComponents()->insert(release_livraJanela);
     release_livraJanela->getNextComponents()->insert(record_contaEnviadosComSucesso);
-    record_contaEnviadosComSucesso->getNextComponents()->insert(route_reciclaPacotes);
+    record_contaEnviadosComSucesso->getNextComponents()->insert(record_contaBytesEnviados);
+    record_contaBytesEnviados->getNextComponents()->insert(route_reciclaPacotes);
     
     
     /* Station 'InTransmissor'. */
@@ -619,8 +633,8 @@ int SlidingWindowModel::main(int argc, char** argv) {
      * @todo Define as a counter.
      */
     record_contaReenviados->setName("ContaReenviados");
-    record_contaReenviados->setExpressionName("PacotesReenviados");
-    record_contaReenviados->setExpression("PacotesReenviados + 1");
+    record_contaReenviados->setExpressionName("Pacotes Reenviados");
+    record_contaReenviados->setExpression("1");
     record_contaReenviados->setFilename("./temp/PacotesReenviados.txt");
     components->insert(record_contaReenviados);
     
