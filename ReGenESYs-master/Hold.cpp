@@ -16,7 +16,6 @@
 #include "Attribute.h"
 #include "Resource.h"
 #include "Signal.h"
-#include <iostream>
 
 Hold::Hold(Model* model): ModelComponent(model, Util::TypeOf<Hold>()) {
    
@@ -129,14 +128,14 @@ void Hold::_execute(Entity* entity) {
 	    _model->getTraceManager()->traceSimulation(Util::TraceLevel::blockInternal, _model->getSimulation()->getSimulatedTime(), entity, this, _waitForValue + "the condition evaluated to " + std::to_string(condition));
         if (condition) {
             _model->sendEntityToComponent(entity, this->getNextComponents()->front(), 0.0);
-            return;
         }
     }
     else /* WaitForSignal and InfiniteHold. */
     {
         Waiting* waiting = new Waiting(entity, this, _model->getSimulation()->getSimulatedTime());
+        double waitForValue = _model->parseExpression(_waitForValue);
+        waiting->setWaitingForValue(waitForValue);
         this->_queue->insertElement(waiting);
-        return; 
     }
 }
 
@@ -153,17 +152,13 @@ void Hold::release_signal(int signal, int recvLimit) {
         limit = std::min(this->_limit, recvLimit);
 
     /* Releases the entities from the queue. */
-    for (int i = 0; i < this->_queue->size(); ++i)
+    for (int i = 0; i < this->_queue->size(); i++)
     {
         Waiting* waiting = _queue->getAtRank(i);
-        //waitingSignal = _model->parseExpression((_waitForValue));
-        
-        waitingSignal = waiting->getEntity()->getAttributeValue("SigValue");
-        //std::cout << waitingSignal << std::endl;
+        waitingSignal = waiting->getWaitingForValue();
         
         if (waitingSignal == signal)
         {
-            Waiting* waiting = _queue->getAtRank(i);
             _model->sendEntityToComponent(waiting->getEntity(), this->getNextComponents()->front(), 0.0);
             this->_limit--;
             this->_queue->removeElement(waiting);

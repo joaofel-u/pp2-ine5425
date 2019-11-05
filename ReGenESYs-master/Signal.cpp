@@ -4,7 +4,6 @@
 #include "Model.h"
 #include "Util.h"
 
-//#include <iostream>
 
 Signal::Signal(Model *model): ModelComponent(model, Util::TypeOf<Signal>()) {
     this->_signalListeners = new List<Hold*>();
@@ -23,15 +22,11 @@ inline bool instanceof(const T*) {
 }
 
 void Signal::_execute(Entity* entity) {
-//    double signalValue = _model->parseExpression((this->_signalValue));
-//    std::cout << signalValue << std::endl;
+    double signalValue = _model->parseExpression((this->_signalValue));
     
-    int signalValue = entity->getAttributeValue("SigValue");
-    //std::cout << value << std::endl;
-    
-    for(auto it = this->_signalListeners->front(); it != this->_signalListeners->last(); it = this->_signalListeners->next()) {
-        //Hold* h = dynamic_cast<Hold*>(it);
-        it->release_signal(signalValue, this->_limit);
+    for (unsigned int i = 0; i < this->_signalListeners->size(); ++i) {
+        Hold* h = this->_signalListeners->getAtRank(i);
+        h->release_signal(signalValue, this->_limit);
     }
     
     _model->sendEntityToComponent(entity, this->getNextComponents()->front(), 0.0);

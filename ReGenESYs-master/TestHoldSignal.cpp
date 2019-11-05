@@ -139,7 +139,7 @@ int TestHoldSignal::main(int argc, char** argv) {
     
     Signal* signalAck = new Signal(model);
     signalAck->setName("SignalAck");
-    signalAck->setSignalValue("Entity.SigValue");  // Entity.SigValue
+    signalAck->setSignalValue("SigValue");  // Entity.SigValue
     components->insert(signalAck);
     
     Dispose* disposeAck = new Dispose(model);

@@ -70,6 +70,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     ElementManager* elements = model->getElementManager();
 
     /* Build the simulation model. */
+    //simulator->getTraceManager()->setTraceLevel(Util::TraceLevel::simulation);
     simulator->getTraceManager()->setTraceLevel(Util::TraceLevel::blockArrival);
     
     /*
@@ -462,10 +463,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(leave_aguardeAck);
     
     
-    /* Hold 'HoldAck'. 
-     *
-     * @todo See Hold implementation
-     */
+    /* Hold 'HoldAck'. */
     Queue* queue_filaAck = new Queue(elements, "FilaAck");
     queue_filaAck->setOrderRule(Queue::OrderRule::FIFO);
     elements->insert(Util::TypeOf<Queue>(), queue_filaAck);
@@ -541,13 +539,10 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(decide_verificaAck);
     
     
-    /* 
-     * Signal 'RetiraDaFilaAck'. 
-     * 
-     * @todo See Signal implementation.
-     * @todo Define correct parameters.
-     */
+    /* Signal 'RetiraDaFilaAck'. */
     signal_retiraDaFilaAck->setName("RetiraDaFilaAck");
+    signal_retiraDaFilaAck->setLimit(0);
+    signal_retiraDaFilaAck->setSignalValue("NumeroPacote");
     components->insert(signal_retiraDaFilaAck);
     
     

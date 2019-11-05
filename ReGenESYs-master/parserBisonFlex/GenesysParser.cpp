@@ -1127,7 +1127,7 @@ namespace yy {
 			    if (driver.getModel()->getSimulation()->getCurrentEntity() != nullptr) {
 				try {
 				    // it could crach because there may be no current entity, if the parse is running before simulation and therefore there is no CurrentEntity
-				    attributeValue = driver.getModel()->getSimulation()->getCurrentEntity()->getAttributeValue(yystack_[0].value.as< obj_t > ().valor);
+				    attributeValue = driver.getModel()->getSimulation()->getCurrentEntity()->getAttributeValue(yystack_[0].value.as< obj_t > ().id);
 				} catch(...) {
 				}
 			    }

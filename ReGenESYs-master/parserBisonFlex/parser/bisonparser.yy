@@ -313,7 +313,7 @@ atributo    : ATRIB      {  double attributeValue = 0.0;
 			    if (driver.getModel()->getSimulation()->getCurrentEntity() != nullptr) {
 				try {
 				    // it could crach because there may be no current entity, if the parse is running before simulation and therefore there is no CurrentEntity
-				    attributeValue = driver.getModel()->getSimulation()->getCurrentEntity()->getAttributeValue($1.valor);
+				    attributeValue = driver.getModel()->getSimulation()->getCurrentEntity()->getAttributeValue($1.id);
 				} catch(...) {
 				}
 			    }
