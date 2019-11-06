@@ -7,11 +7,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/joao/Documentos/ine5425_ModSim/pp2-ine5425/ReGenESYs-master/Record.h</file>
-            <file>file:/home/joao/Documentos/ine5425_ModSim/pp2-ine5425/ReGenESYs-master/Hold.cpp</file>
-            <file>file:/home/joao/Documentos/ine5425_ModSim/pp2-ine5425/ReGenESYs-master/SlidingWindowModel.cpp</file>
-            <file>file:/home/joao/Documentos/ine5425_ModSim/pp2-ine5425/ReGenESYs-master/Record.cpp</file>
-            <file>file:/home/joao/Documentos/ine5425_ModSim/pp2-ine5425/ReGenESYs-master/Signal.cpp</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/Traits.h</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/Record.h</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/main.cpp</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/Separate.cpp</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/SimulationReporterDefaultImpl1.cpp</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/ModelElement.cpp</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/Record.cpp</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/Decide.cpp</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/Counter.cpp</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/Counter.h</file>
+            <file>file:/home/lapesd/pessoal/ine5425_modSim/pp2-ine5425/ReGenESYs-master/SlidingWindowModel.cpp</file>
         </group>
     </open-files>
 </project-private>

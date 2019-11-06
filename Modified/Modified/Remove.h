@@ -39,10 +39,10 @@ protected:
     virtual bool _check(std::string* errorMessage);
 private:
     /* Queue Name: Name of the queue from which the entity will be removed. */
-    std::string _queueName = "Queue";
+    std::string _queueName = "";
 
     /* Rank of Entity: Rank of the entity to remove from within the queue. */
-    std::string _rank = "0";
+    std::string _rank = "1";
 };
 
 #endif /* REMOVE_H */
