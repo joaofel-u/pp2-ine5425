@@ -17,7 +17,6 @@
 #include "ModelChecker_if.h"
 #include "Model.h"
 #include "PluginManager.h"
-#include "List.h"
 
 class ModelCheckerDefaultImpl1 : public ModelChecker_if {
 public:
