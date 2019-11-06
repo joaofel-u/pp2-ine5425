@@ -43,7 +43,9 @@
 #include "TestRemove.h"
 #include "TestSeparate.h"
 #include "TestHoldSignal.h"
-#include "PartialTest.h"
+#include "TransmissorTest.h"
+#include "RecvAckTest.h"
+#include "CanalTest.h"
 
 //  Default implementations
 //statistics
@@ -87,7 +89,9 @@ template <> struct Traits<GenesysApplication_if> {
     //typedef TestRemove Application;
     //typedef TestSeparate Application;
     //typedef TestHoldSignal Application;
-    //typedef PartialTest Application;
+    //typedef TransmissorTest Application;
+    //typedef RecvAckTest Application;
+    //typedef CanalTest Application;
 };
 
 

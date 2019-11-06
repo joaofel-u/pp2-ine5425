@@ -5,13 +5,13 @@
  */
 
 /* 
- * File:   PartialTest.cpp
+ * File:   RecvAckTest.cpp
  * Author: joaofel-u
  *
  * Created on 05 de novembro de 2019, 18:10
  */
 
-#include "PartialTest.h"
+#include "RecvAckTest.h"
 
 // GEneSyS Simulator
 #include "Simulator.h"
@@ -36,15 +36,15 @@
 #include "Attribute.h"
 
 
-PartialTest::PartialTest() {}
-PartialTest::PartialTest(const PartialTest& orig) {}
-PartialTest::~PartialTest() {}
+RecvAckTest::RecvAckTest() {}
+RecvAckTest::RecvAckTest(const RecvAckTest& orig) {}
+RecvAckTest::~RecvAckTest() {}
 
 /**
  * This is the main function of the application. 
  * It instanciates the simulator, builds a simulation model and then simulate that model.
  */
-int PartialTest::main(int argc, char** argv) {
+int RecvAckTest::main(int argc, char** argv) {
     Simulator* simulator = new Simulator();
 
     // insert "fake plugins" since plugins based on dynamic loaded library are not implemented yet
@@ -220,7 +220,7 @@ int PartialTest::main(int argc, char** argv) {
 
     // if the model is ok then save the model into a text file 
     if (model->checkModel()) {
-	model->saveModel("./temp/partialTest.txt");
+	model->saveModel("./temp/recvAckTest.txt");
     }
 
     // execute the simulation util completed and show the report

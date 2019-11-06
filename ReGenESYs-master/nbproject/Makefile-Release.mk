@@ -42,6 +42,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/BaseConsoleGenesysApplication.o \
 	${OBJECTDIR}/Batch.o \
 	${OBJECTDIR}/BuildSimulationModel03.o \
+	${OBJECTDIR}/CanalTest.o \
 	${OBJECTDIR}/CellularAutomata.o \
 	${OBJECTDIR}/CollectorDatafileDefaultImpl1.o \
 	${OBJECTDIR}/CollectorDatafileDummyImpl.o \
@@ -101,7 +102,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/ParserDefaultImpl1.o \
 	${OBJECTDIR}/ParserDummyImpl.o \
 	${OBJECTDIR}/ParserManager.o \
-	${OBJECTDIR}/PartialTest.o \
 	${OBJECTDIR}/PickStation.o \
 	${OBJECTDIR}/PickUp.o \
 	${OBJECTDIR}/Plugin.o \
@@ -113,6 +113,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/ProcessAnalyserDefaultImpl1.o \
 	${OBJECTDIR}/Queue.o \
 	${OBJECTDIR}/Record.o \
+	${OBJECTDIR}/RecvAckTest.o \
 	${OBJECTDIR}/Release.o \
 	${OBJECTDIR}/Remove.o \
 	${OBJECTDIR}/Request.o \
@@ -158,6 +159,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/ThirdExampleOfSimulation.o \
 	${OBJECTDIR}/ToolManager.o \
 	${OBJECTDIR}/TraceManager.o \
+	${OBJECTDIR}/TransmissorTest.o \
 	${OBJECTDIR}/Unstore.o \
 	${OBJECTDIR}/Util.o \
 	${OBJECTDIR}/Variable.o \
@@ -228,6 +230,11 @@ ${OBJECTDIR}/BuildSimulationModel03.o: BuildSimulationModel03.cpp nbproject/Make
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/BuildSimulationModel03.o BuildSimulationModel03.cpp
+
+${OBJECTDIR}/CanalTest.o: CanalTest.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CanalTest.o CanalTest.cpp
 
 ${OBJECTDIR}/CellularAutomata.o: CellularAutomata.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
@@ -524,11 +531,6 @@ ${OBJECTDIR}/ParserManager.o: ParserManager.cpp nbproject/Makefile-${CND_CONF}.m
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ParserManager.o ParserManager.cpp
 
-${OBJECTDIR}/PartialTest.o: PartialTest.cpp nbproject/Makefile-${CND_CONF}.mk
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PartialTest.o PartialTest.cpp
-
 ${OBJECTDIR}/PickStation.o: PickStation.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -583,6 +585,11 @@ ${OBJECTDIR}/Record.o: Record.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Record.o Record.cpp
+
+${OBJECTDIR}/RecvAckTest.o: RecvAckTest.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/RecvAckTest.o RecvAckTest.cpp
 
 ${OBJECTDIR}/Release.o: Release.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
@@ -808,6 +815,11 @@ ${OBJECTDIR}/TraceManager.o: TraceManager.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TraceManager.o TraceManager.cpp
+
+${OBJECTDIR}/TransmissorTest.o: TransmissorTest.cpp nbproject/Makefile-${CND_CONF}.mk
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TransmissorTest.o TransmissorTest.cpp
 
 ${OBJECTDIR}/Unstore.o: Unstore.cpp nbproject/Makefile-${CND_CONF}.mk
 	${MKDIR} -p ${OBJECTDIR}

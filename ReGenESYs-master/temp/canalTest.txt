@@ -1,0 +1,48 @@
+# Genesys simulation model 
+# Last saved on Wed Nov  6 11:34:01 2019
+# simulator infos
+name=ReGenESyS - Reborn Generic and Expansible System Simulator; typename=SimulatorInfo; version=190909; 
+
+# model infos
+analystName=Joao Fellipe Uller; description=; name=Model 1; numberOfReplications=1; projectTitle=; replicationLength=999.000000; replicationLengthTimeUnit=5; terminatingCondition=; typename=ModelInfo; version=1.0; warmUpTime=0.000000; warmUpTimeTimeUnit=5; 
+
+# model elements
+attributeName=; id=23; name=FilaAlocaRotaPacote; orderRule=1; typename=Queue; 
+
+capacity=1; costBusyHour=1.000000; costIdleHour=1.000000; costPerUse=1.000000; id=19; name=RotaPacote; typename=Resource; 
+
+id=1; initialNVACost=0.000000; initialOtherCost=0.000000; initialPicture=report; initialVACost=0.000000; initialWaitingCost=0.000000; name=Pacote; typename=EntityType; 
+
+id=28; name=Entity.ArrivalTime; typename=Attribute; 
+
+id=29; name=Entity.WaitTime; typename=Attribute; 
+
+id=2; name=NumeroPacote; typename=Attribute; 
+
+id=3; name=TamanhoPacote; typename=Attribute; 
+
+id=4; name=DelayCanal; typename=Attribute; 
+
+id=5; name=DelayTransmissao; typename=Attribute; 
+
+id=6; name=TaxaDeTransmissao; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=100.000000; 
+
+id=7; name=PacotesEnviados; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=0.000000; 
+
+id=8; name=TaxaErro; numCols=1; numRows=1; numValues=1; pos0=; typename=Variable; value0=0.010000; 
+
+# model components
+allocationType=0; id=11; name=AlocaRotaPacote; nextId0=12; nextSize=1; priority==2; quantity=1.0; queueId=23; queueName=FilaAlocaRotaPacote; resourceId=19; resourceName=RotaPacote; resourceType=2; rule=4; saveAttribute=; typename=Seize; 
+
+condition0=UNIF(0,1) <= (0.99 - TaxaErro); conditions=1; id=14; name=DecideErroPacote; nextId0=15; nextId1=17; nextSize=2; typename=Decide; 
+
+delayExpression=DelayCanal; delayExpressionTimeUnit=5; id=12; name=LatenciaCanal; nextId0=13; nextSize=1; typename=Delay; 
+
+entitiesPerCreation=1; entityTypename=Pacote; firstCreation=0.000000; id=9; maxCreations=4294967295; name=Pacotes; nextId0=11; nextSize=1; timeBetweenCreations=1; timeBetweenCreationsTimeUnit=5; typename=Create; 
+
+id=13; name=LivraRotaPacote; nextId0=14; nextSize=1; priority=0; quantity=1; resourceId=19; resourceName=RotaPacote; resourceType=2; rule=4; saveAttribute=; typename=Release; 
+
+id=15; name=GoToInReceptor; nextSize=0; typename=Dispose; 
+
+id=17; name=ErroPacote; nextSize=0; typename=Dispose; 
+
