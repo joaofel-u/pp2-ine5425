@@ -16,9 +16,17 @@
 
 #include "ModelComponent.h"
 #include <string>
+#include "Counter.h"
+
 
 class Record : public ModelComponent {
 public:
+    
+    enum class Type: int {
+        Counter=0,
+        Expression=1
+    };
+    
     Record(Model* model);
     Record(const Record& orig);
     virtual ~Record();
@@ -29,6 +37,10 @@ public:
     std::string getExpression() const;
     void setExpressionName(std::string expressionName);
     std::string getExpressionName() const;
+    void setCounter(Counter* counter);
+    Counter* getCounter() const;
+    void setType(Type type);
+    Type getType() const;
     StatisticsCollector* getCstatExpression() const;
 public:
     virtual std::string show();
@@ -42,7 +54,9 @@ protected:
     virtual std::map<std::string, std::string>* _saveInstance();
     virtual bool _check(std::string* errorMessage);
 private:
-    std::string _expression = "";
+    Type _type = Type::Counter;
+    Counter* _counter = nullptr;
+    std::string _expression = "1";
     std::string _expressionName = "";
     std::string _filename = "";
 private:

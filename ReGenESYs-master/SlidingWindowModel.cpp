@@ -82,10 +82,10 @@ int SlidingWindowModel::main(int argc, char** argv) {
     //infos->setNumberOfReplications(10);
     infos->setNumberOfReplications(1);
     //infos->setReplicationLength(1000000);
-    infos->setReplicationLength(10000);
+    infos->setReplicationLength(100);
     infos->setReplicationLengthTimeUnit(Util::TimeUnit::second);
     //infos->setWarmUpPeriod(100000);
-    infos->setWarmUpPeriod(1000);
+    infos->setWarmUpPeriod(0);
     infos->setWarmUpPeriodTimeUnit(Util::TimeUnit::second);
 
     
@@ -179,7 +179,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     Route* route_reciclaPacotes = new Route(model);
     
     Enter* enter_inTransmissor = new Enter(model);
-    Station* station_inTransmissor = new Station(elements, "InTransmissor");;
+    Station* station_inTransmissor = new Station(elements, "InTransmissor");
     Leave* leave_inTransmissor = new Leave(model);
     Decide* decide_verificaFilaAck = new Decide(model);
     Dispose* dispose_ignoraAck = new Dispose(model);
@@ -188,7 +188,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     Dispose* dispose_descartaAck = new Dispose(model);
     
     Enter* enter_countTimeout = new Enter(model);
-    Station* station_countTimeout = new Station(elements, "CountTimeout");;
+    Station* station_countTimeout = new Station(elements, "CountTimeout");
     Leave* leave_countTimeout = new Leave(model);
     Delay* delay_timeoutAck = new Delay(model);
     Decide* decide_verificaFilaAckTimeout = new Decide(model);
@@ -220,7 +220,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     elements->insert(Util::TypeOf<Variable>(), variable_tempoMaximoAck);
     
     Variable* variable_taxaErro = new Variable("TaxaErro");
-    variable_taxaErro->setValue(0.01);
+    variable_taxaErro->setValue(0.05);
     elements->insert(Util::TypeOf<Variable>(), variable_taxaErro);
     
     Variable* variable_taxaDeTransmissao = new Variable("TaxaDeTransmissao");
@@ -235,14 +235,11 @@ int SlidingWindowModel::main(int argc, char** argv) {
     variable_pacotesEnviados->setValue(0);
     elements->insert(Util::TypeOf<Variable>(), variable_pacotesEnviados);
     
-//    Counter* counter_pacotesReenviados = new Counter(elements);
-//    counter_pacotesReenviados->setName("PacotesReenviados");
-//    elements->insert(Util::TypeOf<Counter>(), counter_pacotesReenviados);
-//    
-//    Counter* counter_pacotesEnviadosComSucesso = new Counter(elements);
-//    counter_pacotesEnviadosComSucesso->setName("PacotesEnviadosComSucesso");
-//    elements->insert(Util::TypeOf<Counter>(), counter_pacotesEnviadosComSucesso);
+    Counter* counter_pacotesReenviados = new Counter(elements, "PacotesReenviados", record_contaReenviados);
+    elements->insert(Util::TypeOf<Counter>(), counter_pacotesReenviados);
     
+    Counter* counter_pacotesEnviadosComSucesso = new Counter(elements, "PacotesEnviadosComSucesso", record_contaEnviadosComSucesso);
+    elements->insert(Util::TypeOf<Counter>(), counter_pacotesEnviadosComSucesso);
     
     /* Instantiates all stations that will be used on the model. */
       
@@ -489,20 +486,29 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(release_livraJanela);
     
     
-    /* Assign 'ContaEnviadosComSucesso'. 
-     * @todo Define as a counter.
-     */
+    /* Record 'ContaEnviadosComSucesso'. */
     record_contaEnviadosComSucesso->setName("ContaEnviadosComSucesso");
-    record_contaBytesEnviados->setExpressionName("Pacotes Enviados Com Sucesso");
-    record_contaBytesEnviados->setExpression("1");
-    record_contaBytesEnviados->setFilename("./temp/PacotesEnviados.txt");
+    record_contaEnviadosComSucesso->setType(Record::Type::Counter);
+    record_contaEnviadosComSucesso->setCounter(counter_pacotesEnviadosComSucesso);
+    record_contaEnviadosComSucesso->setExpression("1");
     components->insert(record_contaEnviadosComSucesso);
     
     /* Record 'ContaBytesEnviados'. */
+//    record_contaBytesEnviados->setName("ContaBytesEnviados");
+//    record_contaBytesEnviados->setType(Record::Type::Expression);
+//    record_contaBytesEnviados->setExpressionName("Bytes Enviados");
+//    record_contaBytesEnviados->setExpression("TamanhoPacote");
+//    record_contaBytesEnviados->setFilename("./temp/BytesEnviados.txt");
+//    components->insert(record_contaBytesEnviados);
+    
+    
+    Counter* counter1 = new Counter(elements, "Counter1", record_contaBytesEnviados);
+    elements->insert(Util::TypeOf<Counter>(), counter1);
+    
     record_contaBytesEnviados->setName("ContaBytesEnviados");
-    record_contaBytesEnviados->setExpressionName("Bytes Enviados");
+    record_contaBytesEnviados->setType(Record::Type::Counter);
+    record_contaBytesEnviados->setCounter(counter1);
     record_contaBytesEnviados->setExpression("TamanhoPacote");
-    record_contaBytesEnviados->setFilename("./temp/BytesEnviados.txt");
     components->insert(record_contaBytesEnviados);
     
     
@@ -558,6 +564,8 @@ int SlidingWindowModel::main(int argc, char** argv) {
     signal_retiraDaFilaAck->setLimit(0);
     signal_retiraDaFilaAck->setSignalValue("NumeroPacote");
     components->insert(signal_retiraDaFilaAck);
+    
+    signal_retiraDaFilaAck->getListeners()->insert(hold_holdAck);
     
     
     /* Dispose 'DescartaAck'. */
@@ -626,16 +634,11 @@ int SlidingWindowModel::main(int argc, char** argv) {
     components->insert(remove_removeDaFila);
     
     
-    /* 
-     * Record 'ContaReenviados'. 
-     * 
-     * @todo Define correct parameters.
-     * @todo Define as a counter.
-     */
+    /* Record 'ContaReenviados'. */
     record_contaReenviados->setName("ContaReenviados");
-    record_contaReenviados->setExpressionName("Pacotes Reenviados");
+    record_contaReenviados->setType(Record::Type::Counter);
+    record_contaReenviados->setCounter(counter_pacotesReenviados);
     record_contaReenviados->setExpression("1");
-    record_contaReenviados->setFilename("./temp/PacotesReenviados.txt");
     components->insert(record_contaReenviados);
     
     
@@ -718,7 +721,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     /* Decide 'DecideErroPacote'. */
     decide_decideErroPacote->setName("DecideErroPacote");
-    decide_decideErroPacote->getConditions()->insert("UNIF(0,1) <= (100 - TaxaErro)");
+    decide_decideErroPacote->getConditions()->insert("UNIF(0,1) <= (1 - TaxaErro)");
     components->insert(decide_decideErroPacote);
     
     
@@ -800,7 +803,7 @@ int SlidingWindowModel::main(int argc, char** argv) {
     
     /* Decide 'DecideErroAck'. */
     decide_decideErroAck->setName("DecideErroAck");
-    decide_decideErroAck->getConditions()->insert("UNIF(0,1) <= (100 - TaxaErro)");
+    decide_decideErroAck->getConditions()->insert("UNIF(0,1) <= (1 - TaxaErro)");
     components->insert(decide_decideErroAck);
     
     

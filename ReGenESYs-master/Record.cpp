@@ -65,16 +65,42 @@ std::string Record::getExpression() const {
     return _expression;
 }
 
+void Record::setCounter(Counter* counter) {
+    if (counter == nullptr)
+        throw std::invalid_argument("Invalid pointer passed as parameter");
+    
+    this->_counter = counter;
+}
+
+Counter* Record::getCounter() const {
+    return this->_counter;
+}
+
+void Record::setType(Record::Type type) {
+    this->_type = type;
+}
+
+Record::Type Record::getType() const {
+    return this->_type;
+}
+
 void Record::_execute(Entity* entity) {
     double value = _model->parseExpression(_expression);
-    _cstatExpression->getStatistics()->getCollector()->addValue(value);
-    std::ofstream file;
-    file.open(_filename, std::ofstream::out | std::ofstream::app);
-    file << value << std::endl;
-    file.close(); // TODO: open and close for every data is not a good idea. Should open when replication starts and close when it finishes.    
-    _model->getTraceManager()->traceSimulation(Util::TraceLevel::blockInternal, _model->getSimulation()->getSimulatedTime(), entity, this, "Recording value " + std::to_string(value));
+    
+    if (this->_type == Record::Type::Expression)
+    {
+        _cstatExpression->getStatistics()->getCollector()->addValue(value);
+        std::ofstream file;
+        file.open(_filename, std::ofstream::out | std::ofstream::app);
+        file << value << std::endl;
+        file.close(); // TODO: open and close for every data is not a good idea. Should open when replication starts and close when it finishes.    
+        _model->getTraceManager()->traceSimulation(Util::TraceLevel::blockInternal, _model->getSimulation()->getSimulatedTime(), entity, this, "Recording value " + std::to_string(value));
+    } else
+    {
+        this->_counter->incCountValue(value);
+    }
+    
     _model->sendEntityToComponent(entity, this->getNextComponents()->frontConnection(), 0.0);
-
 }
 
 std::map<std::string, std::string>* Record::_saveInstance() {

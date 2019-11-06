@@ -19,14 +19,13 @@
 // Model Components
 #include "Create.h"
 #include "Assign.h"
-#include "Hold.h"
+#include "Delay.h"
 #include "Dispose.h"
-#include "Signal.h"
-#include "Enter.h"
-#include "Leave.h"
-#include "Station.h"
+#include "Release.h"
+#include "Decide.h"
+#include "Hold.h"
 #include "Seize.h"
-#include "Route.h"
+#include "Signal.h"
 
 // Model elements
 #include "Entity.h"
@@ -68,10 +67,10 @@ int PartialTest::main(int argc, char** argv) {
     ModelInfo* infos = model->getInfos();
     infos->setAnalystName("Joao Fellipe Uller");
     infos->setNumberOfReplications(1);
-    infos->setReplicationLength(42);
-    infos->setReplicationLengthTimeUnit(Util::TimeUnit::minute);
+    infos->setReplicationLength(299);
+    infos->setReplicationLengthTimeUnit(Util::TimeUnit::second);
     infos->setWarmUpPeriod(0);
-    infos->setWarmUpPeriodTimeUnit(Util::TimeUnit::minute);
+    infos->setWarmUpPeriodTimeUnit(Util::TimeUnit::second);
 
     //
     // build the simulation model
@@ -81,6 +80,9 @@ int PartialTest::main(int argc, char** argv) {
     /* Entities. */
     EntityType* pacote = new EntityType(elements, "Pacote");
     elements->insert(Util::TypeOf<EntityType>(), pacote);
+    
+    EntityType* ack = new EntityType(elements, "Ack");
+    elements->insert(Util::TypeOf<EntityType>(), ack);
     
     /* Elements. */
     Attribute* attribute_numeroPacote = new Attribute("NumeroPacote");
@@ -103,113 +105,114 @@ int PartialTest::main(int argc, char** argv) {
     variable_pacotesEnviados->setValue(0);
     elements->insert(Util::TypeOf<Variable>(), variable_pacotesEnviados);
     
+    Variable* variable_taxaErro = new Variable("TaxaErro");
+    variable_taxaErro->setValue(0.05);
+    elements->insert(Util::TypeOf<Variable>(), variable_taxaErro);
+    
     
     /* Components. */
-    Create* create_pacotes = new Create(model);
-    Route* route_goToNovoPacote = new Route(model);
+    Create* create_aguardeAck = new Create(model);
+    Assign* assign1 = new Assign(model);
+    Hold* hold_holdAck = new Hold(model);
+    Dispose* dispose_reciclaPacotes = new Dispose(model);
     
-    /* Secao 'Transmissor'. */
-    Enter* enter_novoPacote = new Enter(model);
-    Station* station_novoPacote = new Station(elements, "NovoPacote");
-    Leave* leave_novoPacote = new Leave(model);
-    Assign* assign_atribuiNumero = new Assign(model);
-    Assign* assign_atribuiTamanho = new Assign(model);
-    Assign* assign_atribuiDelays = new Assign(model);
-    Seize* seize_entraNaJanela = new Seize(model);
-    Dispose* dispose_goToEnvioTransmissor = new Dispose(model);
+    Create* create_inTransmissor = new Create(model);
+    Assign* assign2 = new Assign(model);
+    Decide* decide_verificaFilaAck = new Decide(model);
+    Dispose* dispose_ignoraAck = new Dispose(model);
+    Decide* decide_verificaAck = new Decide(model);
+    Signal* signal_retiraDaFilaAck = new Signal(model);
+    Dispose* dispose_descartaAck = new Dispose(model);
     
+    /* Station 'AguardeAck'. */
+    create_aguardeAck->setName("CreatePacote");
+    create_aguardeAck->setEntityType(pacote);
+    create_aguardeAck->setTimeBetweenCreationsExpression("1");
+    create_aguardeAck->setTimeUnit(Util::TimeUnit::second);
+    create_aguardeAck->setEntitiesCreated(1);
+    create_aguardeAck->setFirstCreation(0.0);
+    components->insert(create_aguardeAck);
     
-    /* Create 'Pacotes'. */
-    create_pacotes->setName("Pacotes");
-    create_pacotes->setEntityType(pacote);
-    create_pacotes->setTimeBetweenCreationsExpression("1");
-    create_pacotes->setTimeUnit(Util::TimeUnit::second);
-    create_pacotes->setEntitiesCreated(1);
-    create_pacotes->setMaxCreations("MR(JanelaDeslizante)");
-    create_pacotes->setFirstCreation(0.0);
-    components->insert(create_pacotes);
-    
-    
-    /* Route 'GoToNovoPacote'. */
-    route_goToNovoPacote->setName("GoToNovoPacote");
-    route_goToNovoPacote->setRouteTimeExpression("0");
-    route_goToNovoPacote->setRouteTimeTimeUnit(Util::TimeUnit::second);
-    route_goToNovoPacote->setRouteDestinationType(Route::DestinationType::Station);
-    route_goToNovoPacote->setStation(station_novoPacote);
-    components->insert(route_goToNovoPacote);
+    assign1->setName("AtribuiNumero1");
+    assign1->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "NumeroPacote", "PacotesEnviados + 1"));
+    assign1->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Variable, "PacotesEnviados", "PacotesEnviados + 1"));
+    components->insert(assign1);
     
     
-    /* Connect the components from 'Cria N pacotes'. */
-    create_pacotes->getNextComponents()->insert(route_goToNovoPacote);
+    /* Hold 'HoldAck'. */
+    Queue* queue_filaAck = new Queue(elements, "FilaAck");
+    queue_filaAck->setOrderRule(Queue::OrderRule::FIFO);
+    elements->insert(Util::TypeOf<Queue>(), queue_filaAck);
+    
+    hold_holdAck->setName("HoldAck");
+    hold_holdAck->setType(Hold::Type::WaitForSignal);
+    hold_holdAck->setWaitForValueExpr("NumeroPacote");
+    hold_holdAck->setLimit(0);
+    hold_holdAck->setQueue(queue_filaAck);
+    components->insert(hold_holdAck);
     
     
-    /*
-     * Secao Transmissor.
-     */
-    /* Station 'NovoPacote'. */
-    elements->insert(Util::TypeOf<Station>(), station_novoPacote);
-    station_novoPacote->setEnterIntoStationComponent(enter_novoPacote);
+    /* Route 'ReciclaPacotes'. */
+    dispose_reciclaPacotes->setName("ReciclaPacotes");
+    components->insert(dispose_reciclaPacotes);
     
-    enter_novoPacote->setName("EnterNovoPacote");
-    enter_novoPacote->setStation(station_novoPacote);
-    components->insert(enter_novoPacote);
-    
-    leave_novoPacote->setName("LeaveNovoPacote");
-    leave_novoPacote->setStation(station_novoPacote);
-    components->insert(leave_novoPacote);
+    /* Connect the components that control the ACK waiting. */
+    create_aguardeAck->getNextComponents()->insert(assign1);
+    assign1->getNextComponents()->insert(hold_holdAck);
+    hold_holdAck->getNextComponents()->insert(dispose_reciclaPacotes);
     
     
-    /* Assign 'AtribuiNumero'. */
-    assign_atribuiNumero->setName("AtribuiNumero");
-    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "NumeroPacote", "PacotesEnviados + 1"));
-    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Variable, "PacotesEnviados", "PacotesEnviados + 1"));
-    components->insert(assign_atribuiNumero);
+    /* Station 'InTransmissor'. */
+    create_inTransmissor->setName("CreateAck");
+    create_inTransmissor->setEntityType(ack);
+    create_inTransmissor->setTimeBetweenCreationsExpression("1");
+    create_inTransmissor->setTimeUnit(Util::TimeUnit::second);
+    create_inTransmissor->setEntitiesCreated(1);
+    create_inTransmissor->setFirstCreation(1.0);
+    components->insert(create_inTransmissor);
+    
+    assign2->setName("AtribuiNumero2");
+    assign2->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "NumeroPacote", "PacotesEnviados"));
+    components->insert(assign2);
+    
+    /* Decide 'VerificaFilaAck'. */
+    decide_verificaFilaAck->setName("VerificaFilaAck");
+    decide_verificaFilaAck->getConditions()->insert("NQ(FilaAck) > 0");
+    components->insert(decide_verificaFilaAck);
     
     
-    /* Assign 'AtribuiTamanho'. */
-    assign_atribuiTamanho->setName("AtribuiTamanho");
-    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "TamanhoPacote", "1160 + 339 * BETA(5.8,1.53,1160,1500)"));
-    components->insert(assign_atribuiTamanho);
+    /* Dispose 'IgnoraAck'. */
+    dispose_ignoraAck->setName("IgnoraAck");
+    components->insert(dispose_ignoraAck);
     
     
-    /* Assign 'AtribuiDelays'. */
-    assign_atribuiDelays->setName("AtribuiDelays");
-    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "DelayCanal", "UNIF(1,50)"));
-    assign_atribuiNumero->getAssignments()->insert(new Assign::Assignment(Assign::DestinationType::Attribute, "DelayTransmissao", "TamanhoPacote * 8 / TaxaDeTransmissao"));
-    components->insert(assign_atribuiDelays);
+    /* Decide 'VerificaAck'. */
+    decide_verificaAck->setName("VerificaAck");
+    decide_verificaAck->getConditions()->insert("NumeroPacote == AQUE(FilaAck,1,NumeroPacote)");
+    components->insert(decide_verificaAck);
     
     
-    /* Seize 'EntraNaJanela'. */
-    Resource* resource_janelaDeslizante = new Resource(elements, "JanelaDeslizante");
-    resource_janelaDeslizante->setCapacity(5);
-    elements->insert(Util::TypeOf<Resource>(), resource_janelaDeslizante);
+    /* Signal 'RetiraDaFilaAck'. */
+    signal_retiraDaFilaAck->setName("RetiraDaFilaAck");
+    signal_retiraDaFilaAck->setLimit(0);
+    signal_retiraDaFilaAck->setSignalValue("NumeroPacote");
+    components->insert(signal_retiraDaFilaAck);
     
-    Queue* queue_filaJanela = new Queue(elements, "FilaJanela");
-    queue_filaJanela->setOrderRule(Queue::OrderRule::FIFO);
-    elements->insert(Util::TypeOf<Queue>(), queue_filaJanela);
+    signal_retiraDaFilaAck->getListeners()->insert(hold_holdAck);
     
-    seize_entraNaJanela->setName("EntraNaJanela");
-    seize_entraNaJanela->setResourceType(Resource::ResourceType::RESOURCE);
-    seize_entraNaJanela->setResource(resource_janelaDeslizante);
-    /* @todo See if it's necessary to define allocationType (where the stat is saved). */
-    seize_entraNaJanela->setPriority(2);
-    seize_entraNaJanela->setQueue(queue_filaJanela);
-    seize_entraNaJanela->setQuantity("1.0");
-    components->insert(seize_entraNaJanela);
+    /* Dispose 'DescartaAck'. */
+    dispose_descartaAck->setName("DescartaAck");
+    components->insert(dispose_descartaAck);
     
     
-    /* Dispose 'GoToEnvioTransmissor'. */
-    dispose_goToEnvioTransmissor->setName("GoToEnvioTransmissor");
-    components->insert(dispose_goToEnvioTransmissor);
-    
-    
-    /* Connect the components from 'Transmissor'. */
-    enter_novoPacote->getNextComponents()->insert(leave_novoPacote);
-    leave_novoPacote->getNextComponents()->insert(assign_atribuiNumero);
-    assign_atribuiNumero->getNextComponents()->insert(assign_atribuiTamanho);
-    assign_atribuiTamanho->getNextComponents()->insert(assign_atribuiDelays);
-    assign_atribuiDelays->getNextComponents()->insert(seize_entraNaJanela);
-    seize_entraNaJanela->getNextComponents()->insert(dispose_goToEnvioTransmissor);
+    /* Connect the components that control the ACK received check. */
+    create_inTransmissor->getNextComponents()->insert(assign2);
+    assign2->getNextComponents()->insert(decide_verificaFilaAck);
+    decide_verificaFilaAck->getNextComponents()->insert(decide_verificaAck);
+    decide_verificaFilaAck->getNextComponents()->insert(dispose_ignoraAck);
+    decide_verificaAck->getNextComponents()->insert(signal_retiraDaFilaAck);
+    decide_verificaAck->getNextComponents()->insert(dispose_ignoraAck);
+    signal_retiraDaFilaAck->getNextComponents()->insert(dispose_descartaAck);
     
     
     // insert the model into the simulator 
